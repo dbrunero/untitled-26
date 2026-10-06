@@ -1,0 +1,49 @@
+{
+  "name": "studio-portfolio",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "start": "node ./dist/server/entry.mjs",
+    "check": "astro check",
+    "typecheck": "astro check",
+    "lint": "eslint .",
+    "placeholders": "node scripts/generate-placeholders.mjs",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
+  },
+  "dependencies": {
+    "@astrojs/node": "^11.1.7",
+    "@astrojs/preact": "^6.0.6",
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/space-grotesk": "^5.3.0",
+    "@fontsource/instrument-serif": "^5.3.0",
+    "astro": "^7.3.6",
+    "gsap": "^3.15.0",
+    "preact": "^10.29.8",
+    "sharp": "^0.35.5",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
+    "eslint": "^10.12.0",
+    "eslint-plugin-astro": "^3.2.1",
+    "typescript": "^7.0.2",
+    "typescript-eslint": "^8.71.1"
+  }
+}

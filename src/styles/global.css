@@ -1,0 +1,217 @@
+/* ───────── Reset ───────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--color-bg);
+  color-scheme: dark;
+  scrollbar-gutter: stable;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+body {
+  min-height: 100vh;
+  min-height: 100svh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+img,
+picture,
+video,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+img,
+video {
+  height: auto;
+}
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 600;
+  line-height: 1;
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+::selection {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+[hidden] {
+  display: none !important;
+}
+
+/* ───────── Accessibility helpers ───────── */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 200;
+  padding: 0.75rem 1.25rem;
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  transform: translateY(-200%);
+  transition: transform var(--dur-2) var(--ease-out);
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+[data-theme='light'] :focus-visible,
+.theme-light :focus-visible {
+  outline-color: var(--paper-ink);
+  box-shadow: 0 0 0 5px var(--color-accent);
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ───────── Layout primitives ───────── */
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+}
+.section {
+  position: relative;
+  padding-block: var(--space-section);
+}
+.section[data-theme='light'] {
+  background: var(--paper);
+  color: var(--paper-ink);
+}
+.section[data-theme='surface'] {
+  background: var(--color-surface);
+}
+.rule {
+  height: 1px;
+  background: var(--color-line);
+  border: 0;
+}
+[data-theme='light'] .rule {
+  background: var(--paper-line);
+}
+main {
+  display: block;
+}
+/* The main landmark can be focused by the skip link without a visible ring */
+main:focus {
+  outline: none;
+}
+
+/* Unlock browser-native hidden content for anchors */
+:target {
+  scroll-margin-top: calc(var(--header-h) + 1rem);
+}
+
+/* Scroll lock when the mobile menu or a modal is open */
+html.is-locked,
+html.is-locked body {
+  overflow: hidden;
+}
+
+/* No-JS safety: show everything */
+html:not(.js) [data-reveal],
+html:not(.js) [data-mask],
+html:not(.js) [data-lines] {
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: none !important;
+}
+
+/* High contrast / forced colors */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 3px solid Highlight;
+  }
+}
+
+/* Fine pointers get the custom cursor; hide the native one only when it is active */
+html.has-cursor,
+html.has-cursor a,
+html.has-cursor button,
+html.has-cursor [role='button'],
+html.has-cursor [data-cursor] {
+  cursor: none;
+}
+html.has-cursor input,
+html.has-cursor textarea,
+html.has-cursor select,
+html.has-cursor [role='combobox'],
+html.has-cursor [role='option'],
+html.has-cursor label {
+  cursor: auto;
+}
+html.has-cursor input[type='checkbox'],
+html.has-cursor input[type='radio'] {
+  cursor: pointer;
+}

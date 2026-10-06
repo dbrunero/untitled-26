@@ -1,0 +1,178 @@
+.display,
+.h-mega {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.045em;
+  line-height: 0.86;
+}
+.display {
+  font-size: var(--fs-display);
+}
+.h-mega {
+  font-size: var(--fs-mega);
+}
+.h-section {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: var(--fs-h2);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+.h-title {
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.lead {
+  font-size: var(--fs-lead);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+.serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: -0.01em;
+}
+.accent {
+  color: var(--color-accent);
+}
+[data-theme='light'] .accent {
+  color: var(--paper-ink);
+  background: var(--color-accent);
+  padding-inline: 0.12em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.muted {
+  color: var(--color-muted);
+}
+[data-theme='light'] .muted {
+  color: var(--paper-muted);
+}
+
+/* Small uppercase labels */
+.label {
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+}
+.label--muted {
+  color: var(--color-muted);
+}
+[data-theme='light'] .label--muted {
+  color: var(--paper-muted);
+}
+.label__dot {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  margin-right: 0.6em;
+  vertical-align: 0.05em;
+}
+[data-theme='light'] .label__dot {
+  background: var(--paper-ink);
+}
+
+/* Lines: split rows for reveal masks */
+.line {
+  display: block;
+  overflow: hidden;
+  /* extra room so descenders of Space Grotesk and serif italic are not clipped */
+  padding-block: 0.06em 0.1em;
+  margin-block: -0.06em -0.1em;
+}
+.line > span {
+  display: block;
+  will-change: auto;
+}
+
+/* Prose (legal pages, case-study body) */
+.prose {
+  max-width: 68ch;
+  font-size: var(--fs-body);
+}
+.prose > * + * {
+  margin-top: 1.1em;
+}
+.prose h2 {
+  font-size: var(--fs-h3);
+  letter-spacing: -0.02em;
+  margin-top: 2.2em;
+  line-height: 1.05;
+}
+.prose h3 {
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
+  margin-top: 1.8em;
+}
+.prose ul {
+  list-style: none;
+  display: grid;
+  gap: 0.5em;
+}
+.prose ul li {
+  padding-left: 1.4em;
+  position: relative;
+}
+.prose ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 0.6em;
+  height: 1px;
+  background: var(--color-accent);
+}
+[data-theme='light'] .prose ul li::before {
+  background: var(--paper-ink);
+}
+.prose a {
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 2px;
+}
+[data-theme='light'] .prose a {
+  text-decoration-color: var(--paper-ink);
+}
+.prose a:hover {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  text-decoration-color: transparent;
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-small);
+}
+.prose th,
+.prose td {
+  text-align: left;
+  padding: 0.85rem 0.75rem;
+  border-bottom: 1px solid var(--color-line);
+  vertical-align: top;
+}
+[data-theme='light'] .prose th,
+[data-theme='light'] .prose td {
+  border-bottom-color: var(--paper-line);
+}
+.prose th {
+  font-size: var(--fs-micro);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-muted);
+  font-weight: 500;
+}
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
