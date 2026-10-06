@@ -45,6 +45,10 @@ img,
 video {
   height: auto;
 }
+/* <picture> must not break height:100% / object-fit chains */
+picture {
+  display: contents;
+}
 input,
 button,
 textarea,

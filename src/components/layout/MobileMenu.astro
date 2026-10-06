@@ -1,0 +1,136 @@
+---
+import { site, nav, mailto, tel } from '../../config/site';
+import Button from '../ui/Button.astro';
+const email = mailto();
+const phone = tel();
+---
+
+<div class="mobile-menu" id="mobile-menu" data-mobile-menu role="dialog" aria-modal="true" aria-label="Menu principale" inert aria-hidden="true">
+  <div class="mobile-menu__inner">
+    <p class="label label--muted mobile-menu__eyebrow">Navigazione</p>
+    <nav aria-label="Menu mobile">
+      <ul class="mobile-menu__list">
+        {
+          nav.map((item, i) => (
+            <li style={`--i:${i}`}>
+              <a href={item.href} class="mobile-menu__link">
+                <span class="mobile-menu__index" aria-hidden="true">0{i + 1}</span>
+                <span class="mobile-menu__text">{item.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="mobile-menu__foot" style="--i:5">
+      <Button href="/contact" size="large" class="mobile-menu__cta">Parliamo del progetto</Button>
+      <p class="mobile-menu__contact">
+        {email ? <a href={email}>{site.email}</a> : <span>{site.email}</span>}
+        <br />
+        {phone ? <a href={phone}>{site.phone}</a> : <span>{site.phone}</span>}
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-menu);
+    background: var(--color-bg);
+    color: var(--color-text);
+    clip-path: circle(0% at calc(100% - 2.5rem) 2.5rem);
+    visibility: hidden;
+    transition:
+      clip-path 0.8s var(--ease-in-out),
+      visibility 0s 0.8s;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .mobile-menu.is-open {
+    clip-path: circle(150% at calc(100% - 2.5rem) 2.5rem);
+    visibility: visible;
+    transition:
+      clip-path 0.9s var(--ease-in-out),
+      visibility 0s;
+  }
+  .mobile-menu__inner {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding: calc(var(--header-h) + 2rem) var(--gutter) max(2rem, env(safe-area-inset-bottom));
+  }
+  .mobile-menu__list {
+    display: grid;
+    gap: 0.25rem;
+    margin-top: var(--space-4);
+  }
+  .mobile-menu__list li,
+  .mobile-menu__foot,
+  .mobile-menu__eyebrow {
+    opacity: 0;
+    transform: translate3d(0, 30px, 0);
+    transition:
+      transform 0.6s var(--ease-out),
+      opacity 0.4s;
+  }
+  .is-open .mobile-menu__list li,
+  .is-open .mobile-menu__foot,
+  .is-open .mobile-menu__eyebrow {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(0.25s + var(--i, 0) * 0.07s);
+  }
+  .mobile-menu__link {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    min-height: 4.5rem;
+    padding-block: 0.5rem;
+    border-bottom: 1px solid var(--color-line);
+    font-size: clamp(2.75rem, 12vw, 5rem);
+    font-weight: 700;
+    letter-spacing: -0.045em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .mobile-menu__link[aria-current='page'] .mobile-menu__text {
+    color: var(--color-accent);
+  }
+  .mobile-menu__index {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    color: var(--color-muted);
+    font-weight: 500;
+  }
+  .mobile-menu__foot {
+    display: grid;
+    gap: var(--space-5);
+  }
+  .mobile-menu__foot :global(.mobile-menu__cta) {
+    width: 100%;
+  }
+  .mobile-menu__contact {
+    font-size: var(--fs-small);
+    color: var(--color-muted);
+  }
+  .mobile-menu__contact a {
+    color: var(--color-text);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  @media (min-width: 1024px) {
+    .mobile-menu {
+      display: none;
+    }
+  }
+  @media (max-height: 560px) {
+    .mobile-menu__link {
+      min-height: 3.25rem;
+      font-size: 2.25rem;
+    }
+  }
+</style>

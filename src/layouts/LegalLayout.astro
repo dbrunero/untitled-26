@@ -1,0 +1,72 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import PageHero from '../components/layout/PageHero.astro';
+
+interface Props {
+  title: string;
+  heading: string;
+  description: string;
+  path: string;
+}
+const { title, heading, description, path } = Astro.props;
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: heading, path },
+];
+---
+
+<BaseLayout title={title} description={description} breadcrumbs={crumbs} noStickyCta>
+  <PageHero crumbs={crumbs} label="Legale" size="display">
+    <Fragment slot="title">
+      <span class="line"><span>{heading}</span></span>
+    </Fragment>
+    <p>Ultimo aggiornamento: <strong>[DATA ULTIMO AGGIORNAMENTO]</strong></p>
+  </PageHero>
+
+  <section class="legal section" data-theme="dark" style="padding-top:var(--space-6)">
+    <div class="container legal__inner">
+      <aside class="legal__draft" role="note" aria-label="Avviso: testo da verificare">
+        <p class="label"><span class="label__dot"></span>Bozza da verificare</p>
+        <p>
+          Questo testo è una struttura di partenza e <strong>non costituisce consulenza legale</strong>. Prima della pubblicazione deve essere compilato con i dati reali, verificato e approvato da un professionista (avvocato o DPO). La presenza del banner cookie non garantisce, da sola, la conformità del sito alla normativa applicabile.
+        </p>
+      </aside>
+      <div class="prose legal__body">
+        <slot />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .legal__inner {
+    display: grid;
+    gap: var(--space-7);
+  }
+  .legal__draft {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border: 1px dashed #e6a700;
+    border-radius: var(--radius-m);
+    max-width: 68ch;
+    background: rgb(230 167 0 / 0.06);
+  }
+  .legal__draft p:last-child {
+    font-size: var(--fs-small);
+    color: #e6e3dc;
+  }
+  .legal__body :global(h2) {
+    font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.25rem);
+  }
+  @media (min-width: 1024px) {
+    .legal__inner {
+      grid-template-columns: 4fr 8fr;
+      align-items: start;
+    }
+    .legal__draft {
+      position: sticky;
+      top: calc(var(--header-h) + 1.5rem);
+    }
+  }
+</style>

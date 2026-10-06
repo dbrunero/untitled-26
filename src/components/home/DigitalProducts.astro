@@ -1,0 +1,496 @@
+---
+import Button from '../ui/Button.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+---
+
+<section class="dp section" data-theme="dark" aria-labelledby="dp-title">
+  <div class="container dp__inner">
+    <div class="dp__copy">
+      <div data-reveal><SectionLabel index="05">Not just websites</SectionLabel></div>
+      <p class="dp__kicker display" data-reveal data-delay="0.05">NON SOLO <span class="accent">SITI.</span></p>
+      <h2 id="dp-title" class="h-section dp__title" data-lines data-delay="0.1">
+        <span class="line"><span>PROGETTIAMO</span></span>
+        <span class="line"><span>ANCHE LO</span></span>
+        <span class="line"><span><em class="serif accent">strumento.</em></span></span>
+      </h2>
+      <p class="lead muted dp__lead" data-reveal data-delay="0.15">
+        Dai siti orientati alla conversione ai software interni: configuratori, CRM, dashboard, preventivatori e web app su misura.
+      </p>
+      <div data-reveal data-delay="0.2">
+        <Button href="/contact?tema=web-app">Parliamo della tua web app</Button>
+      </div>
+    </div>
+
+    <div class="dp__stage" data-pointer-vars data-ui-stage role="group" aria-label="Esempi di interfacce progettate: CRM, configuratore, dashboard, preventivatore, web app e integrazione">
+      <div class="dp__grid" aria-hidden="true">
+        <!-- CRM -->
+        <article class="ui ui--crm" style="--z:70px;--r:-2deg;--n:0">
+          <header class="ui__head"><span class="ui__tag label">CRM</span><span class="ui__pill">Pipeline</span></header>
+          <div class="ui__cols">
+            <div><i class="ui__col-title">Lead</i><b></b><b></b></div>
+            <div><i class="ui__col-title">Trattativa</i><b class="is-hot"></b><b></b></div>
+            <div><i class="ui__col-title">Chiuso</i><b class="is-ok"></b></div>
+          </div>
+        </article>
+        <!-- Configuratore -->
+        <article class="ui ui--conf" style="--z:30px;--r:1.5deg;--n:1">
+          <header class="ui__head"><span class="ui__tag label">Configuratore</span><span class="ui__pill">Live</span></header>
+          <div class="ui__swatches"><i style="--c:#c2ff1f" class="is-on"></i><i style="--c:#f5f2eb"></i><i style="--c:#9e9b94"></i><i style="--c:#38383b"></i></div>
+          <div class="ui__slider"><span></span><i></i></div>
+          <div class="ui__toggle-row"><span class="ui__toggle is-on"></span><span class="ui__toggle"></span><em>Prezzo</em><b class="ui__price"></b></div>
+        </article>
+        <!-- Dashboard -->
+        <article class="ui ui--dash" style="--z:100px;--r:2deg;--n:2">
+          <header class="ui__head"><span class="ui__tag label">Dashboard</span><span class="ui__pill">30 giorni</span></header>
+          <div class="ui__bars"><i style="--h:35%"></i><i style="--h:55%"></i><i style="--h:42%"></i><i style="--h:70%"></i><i style="--h:60%"></i><i style="--h:88%" class="is-hot"></i><i style="--h:74%"></i></div>
+          <svg viewBox="0 0 200 40" class="ui__spark" focusable="false"><path d="M0 32 L30 26 L60 30 L95 16 L130 20 L165 8 L200 12" /></svg>
+        </article>
+        <!-- Preventivatore -->
+        <article class="ui ui--quote" style="--z:50px;--r:-1.5deg;--n:3">
+          <header class="ui__head"><span class="ui__tag label">Preventivatore</span><span class="ui__pill">Bozza</span></header>
+          <div class="ui__rows"><span><i></i><b></b></span><span><i></i><b></b></span><span><i></i><b></b></span></div>
+          <div class="ui__total"><em>Totale</em><b></b></div>
+          <span class="ui__btn">Invia preventivo</span>
+        </article>
+        <!-- Web app -->
+        <article class="ui ui--app" style="--z:20px;--r:2.5deg;--n:4">
+          <header class="ui__head"><span class="ui__tag label">Web app</span><span class="ui__pill ui__pill--ok">Online</span></header>
+          <div class="ui__table">
+            <span><i class="ui__avatar"></i><b></b><em class="ui__state is-ok">Attivo</em></span>
+            <span><i class="ui__avatar"></i><b></b><em class="ui__state">In attesa</em></span>
+            <span><i class="ui__avatar"></i><b></b><em class="ui__state is-ok">Attivo</em></span>
+          </div>
+        </article>
+        <!-- Integrazione -->
+        <article class="ui ui--sync" style="--z:90px;--r:-2.5deg;--n:5">
+          <header class="ui__head"><span class="ui__tag label">Integrazione</span><span class="ui__pill ui__pill--ok">Sync OK</span></header>
+          <svg viewBox="0 0 220 70" class="ui__nodes" focusable="false">
+            <path d="M30 35 H110 M110 35 L190 15 M110 35 L190 55" class="ui__link" />
+            <circle cx="30" cy="35" r="12" /><circle cx="110" cy="35" r="9" class="is-hot" /><circle cx="190" cy="15" r="10" /><circle cx="190" cy="55" r="10" />
+          </svg>
+          <div class="ui__labels label"><span>Gestionale</span><span>API</span><span>Store</span></div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .dp {
+    background: var(--color-surface);
+    overflow: clip;
+    border-block: 1px solid var(--color-line);
+  }
+  .dp__inner {
+    display: grid;
+    gap: var(--space-8);
+    align-items: center;
+  }
+  .dp__copy {
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+  }
+  .dp__kicker {
+    font-size: clamp(2rem, 1rem + 4vw, 4.5rem);
+    letter-spacing: -0.05em;
+  }
+  .dp__title em {
+    font-size: 1.1em;
+  }
+  .dp__lead {
+    max-width: 36ch;
+  }
+
+  /* Stage */
+  .dp__stage {
+    position: relative;
+    perspective: 1500px;
+    perspective-origin: 50% 40%;
+  }
+  .dp__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+    transform-style: preserve-3d;
+  }
+  .ui {
+    --depth: 0px;
+    position: relative;
+    display: grid;
+    gap: 0.9rem;
+    align-content: start;
+    padding: 1rem;
+    min-height: 11rem;
+    background: linear-gradient(160deg, #202024, #141416);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-m);
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.05) inset,
+      0 30px 60px -25px rgb(0 0 0 / 0.8);
+    transform-style: preserve-3d;
+    min-width: 0;
+    opacity: 0;
+    transform: translate3d(0, 40px, 0);
+    transition:
+      opacity 0.8s calc(var(--n) * 0.09s),
+      transform 1.1s var(--ease-out) calc(var(--n) * 0.09s);
+  }
+  .dp__stage.is-active .ui {
+    opacity: 1;
+    transform: none;
+  }
+  html:not(.js) .ui,
+  :global(html:not(.motion)) .ui {
+    opacity: 1;
+    transform: none;
+  }
+  .ui > * {
+    min-width: 0;
+  }
+  .ui__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .ui__tag {
+    color: var(--color-muted);
+    font-size: 0.625rem;
+  }
+  .ui__pill {
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-line);
+    color: var(--color-muted);
+    text-transform: uppercase;
+  }
+  .ui__pill--ok {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+  .ui i,
+  .ui b {
+    display: block;
+    font-style: normal;
+  }
+  /* CRM */
+  .ui__cols {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  .ui__cols > div {
+    display: grid;
+    gap: 0.4rem;
+    align-content: start;
+  }
+  .ui__col-title {
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+  }
+  .ui__cols b {
+    height: 2rem;
+    border-radius: 6px;
+    background: #2a2a2e;
+    border: 1px solid var(--color-line);
+  }
+  .ui__cols b.is-hot {
+    border-color: var(--color-accent);
+    background: rgb(194 255 31 / 0.12);
+  }
+  .ui__cols b.is-ok {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+  /* Config */
+  .ui__swatches {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .ui__swatches i {
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    background: var(--c);
+    border: 2px solid var(--color-line);
+  }
+  .ui__swatches i.is-on {
+    box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-accent);
+  }
+  .ui__slider {
+    position: relative;
+    height: 0.35rem;
+    border-radius: 999px;
+    background: var(--color-line);
+  }
+  .ui__slider span {
+    position: absolute;
+    inset: 0 35% 0 0;
+    border-radius: inherit;
+    background: var(--color-accent);
+  }
+  .ui__slider i {
+    position: absolute;
+    left: 65%;
+    top: 50%;
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 50%;
+    background: var(--color-text);
+    transform: translate(-50%, -50%);
+  }
+  .ui__toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .ui__toggle {
+    width: 1.8rem;
+    height: 1rem;
+    border-radius: 999px;
+    background: var(--color-line);
+    position: relative;
+  }
+  .ui__toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background: var(--color-text);
+  }
+  .ui__toggle.is-on {
+    background: var(--color-accent);
+  }
+  .ui__toggle.is-on::after {
+    left: calc(100% - 0.75rem - 2px);
+    background: var(--color-accent-ink);
+  }
+  .ui__toggle-row em {
+    margin-left: auto;
+    white-space: nowrap;
+    font-style: normal;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+  }
+  .ui__price {
+    flex: none;
+    width: 2.2rem;
+    height: 0.8rem;
+    border-radius: 999px;
+    background: var(--color-text);
+  }
+  /* Dashboard */
+  .ui__bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.35rem;
+    height: 4.5rem;
+  }
+  .ui__bars i {
+    flex: 1;
+    height: var(--h);
+    background: #34343a;
+    border-radius: 3px 3px 0 0;
+  }
+  .ui__bars i.is-hot {
+    background: var(--color-accent);
+  }
+  .ui__spark {
+    width: 100%;
+    height: 1.6rem;
+    fill: none;
+    stroke: var(--color-accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.8;
+  }
+  /* Quote */
+  .ui__rows {
+    display: grid;
+    gap: 0.45rem;
+  }
+  .ui__rows span {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .ui__rows i {
+    width: 55%;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: #34343a;
+  }
+  .ui__rows b {
+    width: 22%;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--color-muted);
+  }
+  .ui__total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--color-line);
+  }
+  .ui__total em {
+    font-style: normal;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .ui__total b {
+    width: 4rem;
+    height: 0.9rem;
+    border-radius: 999px;
+    background: var(--color-text);
+  }
+  .ui__btn {
+    justify-self: start;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+  /* App table */
+  .ui__table {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .ui__table span {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.6rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .ui__avatar {
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4a4a52, #2a2a2e);
+  }
+  .ui__table b {
+    height: 0.5rem;
+    border-radius: 999px;
+    background: #34343a;
+  }
+  .ui__state {
+    font-size: 0.55rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-line);
+    color: var(--color-muted);
+  }
+  .ui__state.is-ok {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+  /* Sync */
+  .ui__nodes {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .ui__nodes circle {
+    fill: #2a2a2e;
+    stroke: var(--color-muted);
+    stroke-width: 1.5;
+  }
+  .ui__nodes circle.is-hot {
+    fill: var(--color-accent);
+    stroke: var(--color-accent);
+  }
+  .ui__link {
+    fill: none;
+    stroke: var(--color-muted);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 4;
+  }
+  .ui__labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.55rem;
+    color: var(--color-muted);
+  }
+
+  /* Idle float (only while the stage is on screen and motion is allowed) */
+  @media (prefers-reduced-motion: no-preference) {
+    .dp__stage.is-live .ui > * {
+      animation: ui-bob 6s ease-in-out infinite;
+      animation-delay: calc(var(--n) * -1.1s);
+    }
+  }
+  @keyframes ui-bob {
+    50% {
+      transform: translate3d(0, -4px, 0);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .dp__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .dp__inner {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: var(--space-7);
+    }
+    .dp__grid {
+      gap: 1.25rem;
+      transform: rotateX(calc(14deg + var(--py, 0) * -4deg)) rotateY(calc(-18deg + var(--px, 0) * 6deg)) rotateZ(2deg);
+      transition: transform 0.9s var(--ease-out);
+    }
+    .ui {
+      transform: translate3d(0, 40px, 0) translateZ(0);
+    }
+    .dp__stage.is-active .ui {
+      transform: translateZ(var(--z)) rotate(var(--r));
+    }
+    .ui--crm {
+      grid-column: 1 / span 2;
+    }
+    .ui--dash {
+      grid-column: 3;
+      grid-row: 1 / span 2;
+    }
+    .ui--conf {
+      grid-column: 1;
+      grid-row: 2;
+    }
+    .ui--quote {
+      grid-column: 2;
+      grid-row: 2;
+      margin-top: 1.5rem;
+    }
+    .ui--app {
+      grid-column: 1 / span 2;
+      grid-row: 3;
+    }
+    .ui--sync {
+      grid-column: 3;
+      grid-row: 3;
+      margin-top: -1rem;
+    }
+  }
+</style>

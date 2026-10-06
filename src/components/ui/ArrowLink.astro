@@ -1,0 +1,17 @@
+---
+interface Props {
+  href: string;
+  class?: string;
+  label?: string;
+}
+const { href, class: className = '', label } = Astro.props;
+---
+
+<a href={href} class:list={['arrow-link', className]} aria-label={label} data-cursor="link">
+  <span class="arrow-link__label"><slot /></span>
+  <span class="arrow-link__icon" aria-hidden="true">
+    <svg width="16" height="16" viewBox="0 0 16 16" focusable="false">
+      <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </span>
+</a>

@@ -5,6 +5,8 @@ export interface MailConfig {
   to?: string | undefined;
   from?: string | undefined;
   apiKey?: string | undefined;
+  /** Defaults to https://api.resend.com */
+  apiUrl?: string | undefined;
 }
 
 export type SendResult =
@@ -39,7 +41,7 @@ export function buildMessage(data: ContactData) {
  * Postmark, SES, SMTP… The rest of the app only depends on `SendResult`.
  */
 export async function sendContactEmail(data: ContactData, config: MailConfig, isDev: boolean): Promise<SendResult> {
-  const { to, from, apiKey } = config;
+  const { to, from, apiKey, apiUrl = 'https://api.resend.com' } = config;
   const message = buildMessage(data);
 
   if (!to || !from || !apiKey) {
@@ -57,7 +59,7 @@ export async function sendContactEmail(data: ContactData, config: MailConfig, is
   }
 
   try {
-    const response = await fetch('https://api.resend.com/emails', {
+    const response = await fetch(`${apiUrl.replace(/\/$/, '')}/emails`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({

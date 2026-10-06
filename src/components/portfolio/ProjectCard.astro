@@ -1,0 +1,301 @@
+---
+import { Picture } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { categories } from '../../content.config';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  index: number;
+  variant?: 'wide' | 'portrait' | 'landscape';
+  /** Adds data attributes used by the archive filters. */
+  filterable?: boolean;
+  priority?: boolean;
+  class?: string;
+  sizes?: string;
+}
+
+const { project, index, variant = 'landscape', filterable = false, priority = false, class: className = '', sizes } = Astro.props;
+const { data } = project;
+const href = `/work/${data.slug}`;
+const imgSizes =
+  sizes ??
+  (variant === 'wide' ? '(min-width: 1024px) 92vw, 100vw' : variant === 'portrait' ? '(min-width: 1024px) 40vw, 100vw' : '(min-width: 1024px) 52vw, 100vw');
+const widths = variant === 'wide' ? [720, 1200, 1800] : [480, 800, 1200];
+const num = String(index + 1).padStart(2, '0');
+---
+
+<article
+  class:list={['card', `card--${variant}`, className]}
+  data-pointer-vars
+  data-cursor="view"
+  data-work-item={filterable ? '' : undefined}
+  data-category={filterable ? data.category : undefined}
+  data-year={filterable ? String(data.year) : undefined}
+>
+  <div class="card__media" data-mask data-parallax="6" transition:name={`cover-${data.slug}`}>
+    <div class="card__scale">
+      <div class="card__plx" data-parallax-target>
+        <Picture
+          src={data.cover}
+          alt={data.coverAlt}
+          widths={widths}
+          sizes={imgSizes}
+          formats={['avif', 'webp']}
+          loading={priority ? 'eager' : 'lazy'}
+          fetchpriority={priority ? 'high' : 'auto'}
+          decoding="async"
+          class="card__img"
+        />
+      </div>
+    </div>
+    <div class="card__overlay" aria-hidden="true">
+      <p class="card__overlay-excerpt">{data.excerpt}</p>
+      <ul class="card__tags">
+        {data.services.slice(0, 3).map((s) => <li class="label">{s}</li>)}
+      </ul>
+      <span class="card__open">Apri il case study <span class="card__arrow"><svg width="18" height="18" viewBox="0 0 18 18"><path d="M4 14L14 4M6 4h8v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg></span></span>
+    </div>
+    <span class="card__frame" aria-hidden="true"></span>
+    <span class="card__scrim" aria-hidden="true"></span>
+  </div>
+
+  <div class="card__body">
+    <p class="card__meta label">
+      <span class="card__num">{num}</span>
+      <span>{categories[data.category]}</span>
+      <span>{data.year}</span>
+    </p>
+    <h3 class="card__title">
+      <a href={href} class="card__link">{data.title}</a>
+    </h3>
+    <p class="card__client label muted">{data.client}</p>
+    <p class="card__result">{data.result}</p>
+  </div>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    display: grid;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+  .card__media {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    transition: border-color 0.4s var(--ease-out);
+  }
+  .card--portrait .card__media {
+    aspect-ratio: 4 / 5;
+  }
+  .card--landscape .card__media {
+    aspect-ratio: 3 / 2;
+  }
+  .card--wide .card__media {
+    aspect-ratio: 16 / 9;
+  }
+  @media (min-width: 1024px) {
+    .card--wide .card__media {
+      aspect-ratio: 21 / 10;
+    }
+  }
+  .card__scale,
+  .card__plx {
+    position: absolute;
+    inset: 0;
+  }
+  .card__plx {
+    inset: -7% 0;
+  }
+  @media (max-width: 767px) {
+    .card__plx {
+      inset: 0;
+    }
+  }
+  .card__media :global(.card__img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1) translate3d(calc(var(--px, 0) * -1.4%), calc(var(--py, 0) * -1.4%), 0);
+    transition: transform 1s var(--ease-out);
+  }
+  .card__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 45%, rgb(9 9 10 / 0.75) 100%);
+    opacity: 0;
+    transition: opacity 0.5s;
+    pointer-events: none;
+  }
+  .card__frame {
+    position: absolute;
+    inset: 0.75rem;
+    border: 1px solid var(--color-accent);
+    opacity: 0;
+    transform: scale(1.03);
+    transition:
+      opacity 0.4s,
+      transform 0.7s var(--ease-out);
+    pointer-events: none;
+  }
+  .card__overlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    color: var(--color-text);
+    background: linear-gradient(180deg, transparent, rgb(9 9 10 / 0.88) 55%);
+    transform: translate3d(0, 20%, 0);
+    opacity: 0;
+    transition:
+      transform 0.7s var(--ease-out),
+      opacity 0.4s;
+    pointer-events: none;
+  }
+  .card__overlay-excerpt {
+    font-size: var(--fs-small);
+    max-width: 38ch;
+    color: #e6e3dc;
+  }
+  .card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .card__tags li {
+    padding: 0.25rem 0.55rem;
+    border: 1px solid rgb(245 242 235 / 0.4);
+    border-radius: 999px;
+    font-size: 0.625rem;
+  }
+  .card__open {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+  .card__arrow {
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+    transition: transform 0.5s var(--ease-out);
+  }
+
+  /* Hover and keyboard focus share the same feedback */
+  .card:focus-within .card__media,
+  .card:hover .card__media {
+    border-color: var(--color-accent);
+  }
+  @media (hover: hover) {
+    .card:hover .card__overlay,
+    .card:hover .card__frame {
+      opacity: 1;
+      transform: none;
+    }
+    .card:hover :global(.card__img) {
+      transform: scale(1.06) translate3d(calc(var(--px, 0) * -1.4%), calc(var(--py, 0) * -1.4%), 0);
+    }
+    .card:hover .card__arrow {
+      transform: rotate(45deg);
+    }
+  }
+  .card:focus-within .card__overlay,
+  .card:focus-within .card__frame {
+    opacity: 1;
+    transform: none;
+  }
+  .card:focus-within :global(.card__img) {
+    transform: scale(1.06);
+  }
+
+  .card__body {
+    display: grid;
+    gap: 0.4rem;
+    align-content: start;
+  }
+  .card__meta {
+    display: flex;
+    gap: 1rem;
+    color: var(--color-muted);
+  }
+  .card__num {
+    color: var(--color-accent);
+  }
+  .card__title {
+    font-size: clamp(1.75rem, 1.1rem + 2.2vw, 3.25rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+  .card__link {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 2px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.6s var(--ease-out);
+  }
+  /* stretched link: the whole card is clickable, the title is the accessible name */
+  .card__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+  }
+  .card:hover .card__link,
+  .card:focus-within .card__link {
+    background-size: 100% 2px;
+  }
+  .card__link:focus-visible {
+    outline: none;
+  }
+  .card:has(.card__link:focus-visible) {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 6px;
+  }
+  .card__result {
+    color: #cfccc5;
+    font-size: var(--fs-small);
+    max-width: 44ch;
+  }
+
+  /* Wide: the title enters the image on top of the scrim */
+  @media (min-width: 768px) {
+    .card--wide .card__body {
+      margin-top: calc(var(--space-9) * -0.8);
+      position: relative;
+      z-index: 2;
+      padding-inline: var(--space-5);
+      pointer-events: none;
+    }
+    .card--wide .card__scrim {
+      opacity: 1;
+    }
+    .card--wide .card__title {
+      font-size: clamp(2.5rem, 1rem + 5vw, 6.5rem);
+      line-height: 0.9;
+      text-transform: uppercase;
+      max-width: 14ch;
+    }
+    .card--wide .card__overlay {
+      inset: 0 0 auto auto;
+      width: min(24rem, 45%);
+      height: 100%;
+      align-content: end;
+      background: linear-gradient(270deg, rgb(9 9 10 / 0.85), transparent);
+      justify-items: end;
+      text-align: right;
+    }
+  }
+  .card--portrait {
+    max-width: 36rem;
+  }
+</style>

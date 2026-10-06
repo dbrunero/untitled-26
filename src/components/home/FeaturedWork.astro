@@ -1,0 +1,108 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ProjectCard from '../portfolio/ProjectCard.astro';
+import Button from '../ui/Button.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+
+interface Props {
+  projects: CollectionEntry<'projects'>[];
+}
+const { projects } = Astro.props;
+// Fixed editorial composition: wide / portrait + landscape / landscape + portrait / wide
+const layout: Array<{ variant: 'wide' | 'portrait' | 'landscape'; place: string }> = [
+  { variant: 'wide', place: 'a' },
+  { variant: 'portrait', place: 'b' },
+  { variant: 'landscape', place: 'c' },
+  { variant: 'landscape', place: 'd' },
+  { variant: 'portrait', place: 'e' },
+  { variant: 'wide', place: 'f' },
+];
+---
+
+<section class="fw section" data-theme="dark" aria-labelledby="work-title" id="work">
+  <div class="container">
+    <header class="fw__head">
+      <div data-reveal><SectionLabel index="03">Work selezionati</SectionLabel></div>
+      <h2 id="work-title" class="h-section fw__title" data-lines>
+        <span class="line"><span>PROGETTI CHE</span></span>
+        <span class="line"><span>HANNO <em class="serif accent">lasciato il segno.</em></span></span>
+      </h2>
+      <p class="fw__count label muted" data-reveal>({String(projects.length).padStart(2, '0')}) casi studio · scorri</p>
+    </header>
+
+    <div class="fw__grid">
+      {
+        projects.slice(0, 6).map((p, i) => {
+          const slot = layout[i] ?? { variant: 'landscape' as const, place: 'c' };
+          return <ProjectCard project={p} index={i} variant={slot.variant} class={`fw__item fw__item--${slot.place}`} priority={false} />;
+        })
+      }
+    </div>
+
+    <div class="fw__cta" data-reveal>
+      <Button href="/work" size="large">Vedi tutti i progetti</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .fw {
+    background: var(--color-bg);
+  }
+  .fw__head {
+    display: grid;
+    gap: var(--space-5);
+    margin-bottom: var(--space-8);
+  }
+  .fw__title em {
+    font-size: 1.08em;
+  }
+  .fw__grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--space-8) var(--gutter);
+  }
+  .fw__grid :global(.fw__item) {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 768px) {
+    .fw__grid {
+      gap: var(--space-9) var(--gutter);
+    }
+    .fw__grid :global(.fw__item--b) {
+      grid-column: 1 / span 6;
+    }
+    .fw__grid :global(.fw__item--c) {
+      grid-column: 7 / span 6;
+      align-self: end;
+    }
+    .fw__grid :global(.fw__item--d) {
+      grid-column: 1 / span 7;
+    }
+    .fw__grid :global(.fw__item--e) {
+      grid-column: 9 / span 4;
+      margin-top: var(--space-9);
+    }
+  }
+  @media (min-width: 1024px) {
+    .fw__grid :global(.fw__item--b) {
+      grid-column: 1 / span 5;
+      margin-top: var(--space-7);
+    }
+    .fw__grid :global(.fw__item--c) {
+      grid-column: 6 / span 7;
+    }
+    .fw__grid :global(.fw__item--d) {
+      grid-column: 2 / span 7;
+    }
+    .fw__grid :global(.fw__item--e) {
+      grid-column: 9 / span 4;
+      margin-top: calc(var(--space-9) * 1.6);
+    }
+  }
+  .fw__cta {
+    margin-top: var(--space-9);
+    display: flex;
+    justify-content: center;
+  }
+</style>

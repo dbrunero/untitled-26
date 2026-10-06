@@ -90,7 +90,7 @@ export function validateContact(input: unknown):
 }
 
 /** Validates one field in isolation (used for progressive client-side validation). */
-export function validateField(name: FieldName, input: Record<string, unknown>): string | undefined {
+export function validateField(name: FieldName, input: unknown): string | undefined {
   const result = contactSchema.safeParse(input);
   if (result.success) return undefined;
   return flattenErrors(result.error)[name];

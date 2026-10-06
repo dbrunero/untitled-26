@@ -1,0 +1,195 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/layout/PageHero.astro';
+import Marquee from '../components/home/Marquee.astro';
+import Button from '../components/ui/Button.astro';
+import SectionLabel from '../components/ui/SectionLabel.astro';
+import { serviceAreas } from '../config/content';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Servizi', path: '/services' },
+];
+const themes = ['dark', 'light', 'dark'] as const;
+---
+
+<BaseLayout
+  title="Servizi — foto, video, marketing e software"
+  description="Produzione foto e video, social media, Google Ads, SEO, tracking, siti, ecommerce, configuratori, CRM e web app custom: tre aree, un unico flusso di lavoro."
+  breadcrumbs={crumbs}
+>
+  <PageHero crumbs={crumbs} label="Servizi">
+    <Fragment slot="title">
+      <span class="line"><span>SERVIZI</span></span>
+      <span class="line"><span><em class="serif accent">un solo</em> sistema.</span></span>
+    </Fragment>
+    <p>
+      Create, Grow, Build: produzione, distribuzione e prodotto digitale. Puoi iniziare da una sola area, ma il vantaggio sta nel metterle in relazione.
+    </p>
+  </PageHero>
+
+  <Marquee />
+
+  {
+    serviceAreas.map((area, i) => (
+      <section class="area section" data-theme={themes[i]} aria-labelledby={`area-${area.id}`} id={area.id}>
+        <div class="container">
+          <header class="area__head grid-12">
+            <div class="area__label" data-reveal><SectionLabel index={area.index}>{area.label}</SectionLabel></div>
+            <h2 id={`area-${area.id}`} class="h-section area__title" data-lines>
+              <span class="line"><span>{area.label}</span></span>
+              <span class="line"><span class="serif accent">{area.tagline}</span></span>
+            </h2>
+            <p class="lead area__summary" data-reveal>{area.summary}</p>
+          </header>
+
+          <ul class="area__items">
+            {area.items.map((item, n) => (
+              <li class="area__item" data-reveal>
+                <span class="label area__n">{String(n + 1).padStart(2, '0')}</span>
+                <h3 class="area__name">{item.name}</h3>
+                <p class="area__desc">{item.description}</p>
+              </li>
+            ))}
+          </ul>
+
+          <div class="area__foot">
+            <div>
+              <h3 class="label muted">Cosa ricevi</h3>
+              <ul class="area__deliv">
+                {area.deliverables.map((d) => <li class="label">{d}</li>)}
+              </ul>
+            </div>
+            <Button href={`/contact?tema=${area.id}`} variant={themes[i] === 'light' ? 'primary' : 'primary'}>Richiedi un preventivo</Button>
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  <section class="how section" data-theme="dark" aria-labelledby="how-title">
+    <div class="container how__inner">
+      <h2 id="how-title" class="h-section" data-lines>
+        <span class="line"><span>DALLA PRIMA FOTOGRAFIA</span></span>
+        <span class="line"><span>ALL’ULTIMA <em class="serif accent">riga di codice.</em></span></span>
+      </h2>
+      <div class="how__actions" data-reveal>
+        <Button href="/contact" size="large">Raccontaci il tuo progetto</Button>
+        <Button href="/work" variant="ghost" size="large">Guarda i progetti</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .area__head {
+    row-gap: var(--space-5);
+    margin-bottom: var(--space-8);
+    align-items: end;
+  }
+  .area__label,
+  .area__title,
+  .area__summary {
+    grid-column: 1 / -1;
+  }
+  .area__title em,
+  .area__title .serif {
+    font-size: 0.55em;
+    display: block;
+    line-height: 1.1;
+    margin-top: 0.15em;
+  }
+  .area__summary {
+    max-width: 38ch;
+  }
+  @media (min-width: 1024px) {
+    .area__title {
+      grid-column: 1 / span 8;
+    }
+    .area__summary {
+      grid-column: 9 / -1;
+    }
+  }
+  .area__items {
+    display: grid;
+    border-top: 1px solid currentColor;
+  }
+  .area__item {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 0.4rem var(--space-4);
+    padding: var(--space-5) 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  [data-theme='light'] .area__item {
+    border-bottom-color: var(--paper-line);
+  }
+  .area__n {
+    grid-row: 1 / span 2;
+    padding-top: 0.5rem;
+    opacity: 0.6;
+  }
+  .area__name {
+    font-size: clamp(1.75rem, 1rem + 2.6vw, 3.5rem);
+    letter-spacing: -0.04em;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .area__desc {
+    max-width: 52ch;
+    color: var(--color-muted);
+  }
+  [data-theme='light'] .area__desc {
+    color: var(--paper-muted);
+  }
+  @media (min-width: 900px) {
+    .area__item {
+      grid-template-columns: 4rem minmax(0, 1fr) minmax(0, 1fr);
+      align-items: baseline;
+      padding: var(--space-6) 0;
+    }
+    .area__n {
+      grid-row: auto;
+    }
+    .area__desc {
+      justify-self: end;
+    }
+  }
+  .area__foot {
+    display: grid;
+    gap: var(--space-5);
+    margin-top: var(--space-7);
+    justify-items: start;
+  }
+  .area__deliv {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: var(--space-3);
+  }
+  .area__deliv li {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    font-size: 0.65rem;
+  }
+  @media (min-width: 900px) {
+    .area__foot {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+    }
+  }
+  .how__inner {
+    display: grid;
+    gap: var(--space-6);
+    justify-items: start;
+  }
+  .how__inner em {
+    font-size: 1.1em;
+  }
+  .how__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

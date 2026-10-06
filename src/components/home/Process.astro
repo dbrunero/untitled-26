@@ -1,0 +1,205 @@
+---
+import { processSteps } from '../../config/content';
+import SectionLabel from '../ui/SectionLabel.astro';
+---
+
+<section class="proc section" data-theme="light" data-process aria-labelledby="process-title" id="metodo">
+  <div class="container proc__inner">
+    <header class="proc__head">
+      <div data-reveal><SectionLabel index="06">Processo</SectionLabel></div>
+      <h2 id="process-title" class="h-section proc__title" data-lines>
+        <span class="line"><span>QUATTRO FASI,</span></span>
+        <span class="line"><span>NESSUN <em class="serif accent">passaggio a vuoto.</em></span></span>
+      </h2>
+      <p class="proc__counter label" aria-hidden="true">
+        <span class="proc__counter-now" data-process-current>01</span>
+        <span class="proc__counter-sep"></span>
+        <span>{String(processSteps.length).padStart(2, '0')}</span>
+      </p>
+    </header>
+
+    <div class="proc__timeline" data-process-list>
+      <div class="proc__track" aria-hidden="true"><span class="proc__fill" data-process-fill></span></div>
+      <ol class="proc__steps">
+        {
+          processSteps.map((step) => (
+            <li class="proc__step" data-process-step>
+              <div class="proc__marker" aria-hidden="true"><span>{step.index}</span></div>
+              <div class="proc__content">
+                <p class="label proc__phase">Fase {step.index} / {String(processSteps.length).padStart(2, '0')}</p>
+                <h3 class="proc__name">{step.title}</h3>
+                <p class="proc__desc">{step.description}</p>
+                <ul class="proc__deliverables" aria-label="Deliverable principali">
+                  {step.deliverables.map((d) => <li class="label">{d}</li>)}
+                </ul>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .proc__head {
+    position: relative;
+    display: grid;
+    gap: var(--space-5);
+    margin-bottom: var(--space-8);
+  }
+  .proc__counter {
+    display: none;
+  }
+  @media (min-width: 900px) {
+    .proc__counter {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+    }
+    .proc__counter-now {
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-weight: 700;
+      letter-spacing: -0.05em;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .proc__counter-sep {
+      width: 2.5rem;
+      height: 1px;
+      background: currentColor;
+      align-self: center;
+    }
+  }
+  .proc__timeline {
+    position: relative;
+    padding-left: 3.25rem;
+  }
+  .proc__track {
+    position: absolute;
+    left: 1rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--paper-line);
+  }
+  .proc__fill {
+    position: absolute;
+    inset: 0;
+    background: var(--paper-ink);
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  html:not(.js) .proc__fill {
+    transform: scaleY(1);
+  }
+  .proc__steps {
+    display: grid;
+    gap: var(--space-8);
+  }
+  .proc__step {
+    position: relative;
+    display: grid;
+    gap: var(--space-4);
+    /* Inactive steps are de-emphasised with colour (never below AA contrast), not with opacity. */
+    --step-ink: var(--paper-muted);
+    --step-head: #8a867d;
+    transition: color 0.6s var(--ease-out);
+  }
+  .proc__step.is-active,
+  html:not(.js) .proc__step {
+    --step-ink: var(--paper-ink);
+    --step-head: var(--paper-ink);
+  }
+  .proc__marker {
+    position: absolute;
+    left: -3.25rem;
+    top: 0.2rem;
+    width: 2.1rem;
+    height: 2.1rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid var(--paper-line);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    transition:
+      background-color 0.4s,
+      border-color 0.4s,
+      color 0.4s,
+      transform 0.6s var(--ease-spring);
+  }
+  .proc__step.is-active .proc__marker {
+    background: var(--color-accent);
+    border-color: var(--paper-ink);
+    transform: scale(1.1);
+  }
+  .proc__name {
+    font-size: clamp(2rem, 1rem + 4.4vw, 5.5rem);
+    letter-spacing: -0.045em;
+    line-height: 0.95;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--step-head);
+    transition: color 0.6s var(--ease-out);
+  }
+  .proc__desc {
+    max-width: 46ch;
+    font-size: var(--fs-lead);
+    line-height: 1.4;
+    color: var(--step-ink);
+    transition: color 0.6s var(--ease-out);
+  }
+  .proc__deliverables {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .proc__deliverables li {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--step-ink);
+    border-radius: 999px;
+    letter-spacing: 0.1em;
+    font-size: 0.65rem;
+    color: var(--step-ink);
+  }
+  .proc__phase {
+    color: var(--paper-muted);
+  }
+  @media (min-width: 900px) {
+    .proc__timeline {
+      padding-left: 0;
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+    .proc__track {
+      left: calc(33.333% - 1px);
+    }
+    .proc__step {
+      grid-template-columns: 33.333% 1fr;
+      column-gap: 0;
+    }
+    .proc__marker {
+      left: calc(33.333% - 1.05rem);
+      top: 0.4rem;
+    }
+    .proc__content {
+      grid-column: 2;
+      padding-left: var(--space-7);
+      display: grid;
+      gap: var(--space-4);
+    }
+    .proc__phase {
+      position: absolute;
+      left: 0;
+      top: 0.7rem;
+      width: calc(33.333% - 2rem);
+    }
+  }
+</style>

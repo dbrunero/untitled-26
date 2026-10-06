@@ -1,0 +1,108 @@
+---
+import { getImage } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  video: CollectionEntry<'projects'>['data']['videos'][number];
+}
+const { video } = Astro.props;
+const poster = await getImage({ src: video.poster, width: 1280, format: 'webp' });
+---
+
+<figure class={`vid ${video.vertical ? 'vid--vertical' : ''}`} data-reveal>
+  <div class="vid__frame" data-video>
+    <img class="vid__poster" src={poster.src} alt={video.alt} width={poster.options.width} height={poster.options.height} loading="lazy" decoding="async" />
+    {
+      video.src ? (
+        <>
+          <video
+            class="vid__el"
+            muted
+            loop
+            playsinline
+            preload="none"
+            poster={poster.src}
+            data-src={video.src}
+            aria-label={video.title}
+            tabindex="-1"
+          />
+          <button type="button" class="vid__toggle" data-video-toggle data-state="paused" aria-label="Riproduci il video">
+            <span class="vid__icon vid__icon--pause" aria-hidden="true"><i></i><i></i></span>
+            <span class="vid__icon vid__icon--play" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 1.5v11l9-5.5z" fill="currentColor" /></svg></span>
+          </button>
+        </>
+      ) : null
+    }
+  </div>
+  <figcaption class="label muted">{video.title}{video.src ? '' : ' — anteprima'}</figcaption>
+</figure>
+
+<style>
+  .vid {
+    margin: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .vid__frame {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--color-line);
+    background: var(--color-surface);
+  }
+  .vid--vertical {
+    max-width: 24rem;
+  }
+  .vid--vertical .vid__frame {
+    aspect-ratio: 9 / 16;
+  }
+  .vid__poster,
+  .vid__el {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .vid__el {
+    opacity: 0;
+    transition: opacity 0.6s;
+  }
+  .vid__frame.is-playing .vid__el {
+    opacity: 1;
+  }
+  .vid__toggle {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: rgb(9 9 10 / 0.75);
+    color: var(--color-text);
+    border: 1px solid rgb(245 242 235 / 0.4);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    transition: background-color 0.3s, color 0.3s;
+  }
+  .vid__toggle:hover {
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+  .vid__icon {
+    display: none;
+  }
+  .vid__toggle[data-state='playing'] .vid__icon--pause,
+  .vid__toggle:not([data-state='playing']) .vid__icon--play {
+    display: flex;
+    gap: 3px;
+  }
+  .vid__icon--pause i {
+    width: 3px;
+    height: 12px;
+    background: currentColor;
+  }
+</style>

@@ -12,7 +12,6 @@ challenge: "Il brand aveva un prodotto eccellente e un catalogo visivamente diso
 solution: "Abbiamo costruito un set unico con tre luci fisse e una palette di superfici, poi definito una griglia di inquadrature: packshot, macro texture, still life narrativo. Ogni scatto è stato ritoccato con lo stesso profilo colore, pronto per web, stampa e social."
 cover: ../../assets/projects/nuvola-lab-skincare/cover.jpg
 coverAlt: "Due flaconi cosmetici color sabbia su una superficie scura riflettente, illuminati da una luce morbida dall'alto."
-format: portrait
 gallery:
   - image: ../../assets/projects/nuvola-lab-skincare/gallery-01.jpg
     alt: "Tre flaconi di altezze diverse allineati su sfondo grigio caldo."

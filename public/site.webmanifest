@@ -1,0 +1,14 @@
+{
+  "name": "[NOME AGENZIA]",
+  "short_name": "[NOME AGENZIA]",
+  "description": "Creative + digital studio: contenuti, marketing e prodotti digitali.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#09090A",
+  "theme_color": "#09090A",
+  "lang": "it",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

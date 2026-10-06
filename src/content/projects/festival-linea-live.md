@@ -12,7 +12,6 @@ challenge: "Il festival voleva un racconto vivo, non il solito album a posterior
 solution: "Una redazione mobile: due fotografi, due videomaker e un editor in regia. Preset condivisi, cartelle di consegna per palco e un calendario di pubblicazione agganciato alla scaletta degli artisti."
 cover: ../../assets/projects/festival-linea-live/cover.jpg
 coverAlt: "Fasci di luce verde e bianca su un palco, pubblico in silhouette in primo piano."
-format: landscape
 gallery:
   - image: ../../assets/projects/festival-linea-live/gallery-01.jpg
     alt: "Luci da palco incrociate sopra il pubblico."

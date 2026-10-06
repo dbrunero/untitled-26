@@ -1,0 +1,117 @@
+---
+import ContactForm from '../forms/ContactForm';
+import SectionLabel from '../ui/SectionLabel.astro';
+import { site, mailto, tel } from '../../config/site';
+
+interface Props {
+  /** "home" = compact heading; "page" = used on /contact */
+  heading?: boolean;
+}
+const { heading = true } = Astro.props;
+const email = mailto();
+const phone = tel();
+---
+
+<section class="contact section" data-theme="light" {...(heading ? { 'aria-labelledby': 'contact-title' } : { 'aria-label': 'Modulo di contatto' })} id="contatti" data-hide-sticky>
+  <div class="container contact__inner">
+    <header class="contact__head">
+      <div data-reveal><SectionLabel index="08">Contatti</SectionLabel></div>
+      {
+        heading && (
+          <h2 id="contact-title" class="h-section contact__title" data-lines>
+            <span class="line"><span>HAI UN PROGETTO?</span></span>
+            <span class="line"><span>RENDIAMOLO</span></span>
+            <span class="line"><span><em class="serif accent">impossibile</em> DA IGNORARE.</span></span>
+          </h2>
+        )
+      }
+      <p class="lead contact__lead" data-reveal>
+        Raccontaci obiettivo, contesto e tempi. Ti rispondiamo entro un giorno lavorativo con una proposta di passi successivi.
+      </p>
+    </header>
+
+    <div class="contact__body grid-12">
+      <div class="contact__form" data-reveal>
+        <ContactForm client:visible idPrefix="home" theme="light" />
+      </div>
+      <aside class="contact__aside" aria-label="Recapiti">
+        <div>
+          <h3 class="label muted">Email</h3>
+          <p class="contact__big">{email ? <a href={email}>{site.email}</a> : <span>{site.email}</span>}</p>
+        </div>
+        <div>
+          <h3 class="label muted">Telefono</h3>
+          <p class="contact__big">{phone ? <a href={phone}>{site.phone}</a> : <span>{site.phone}</span>}</p>
+        </div>
+        <div>
+          <h3 class="label muted">Studio</h3>
+          <p>{site.address}<br />{site.city}</p>
+        </div>
+        <p class="contact__small">
+          Tempo medio di risposta: <strong>entro 1 giorno lavorativo</strong>. Nessuna newsletter, nessun obbligo.
+        </p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact__head {
+    display: grid;
+    gap: var(--space-5);
+    margin-bottom: var(--space-8);
+  }
+  .contact__title {
+    font-size: clamp(2.5rem, 0.6rem + 7.4vw, 8rem);
+  }
+  .contact__title em {
+    font-size: 1.1em;
+  }
+  .contact__lead {
+    max-width: 44ch;
+    color: var(--paper-muted);
+  }
+  .contact__body {
+    row-gap: var(--space-8);
+  }
+  .contact__form {
+    grid-column: 1 / -1;
+  }
+  .contact__aside {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--paper-ink);
+  }
+  .contact__big {
+    font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+  }
+  .contact__big a {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 100% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+  }
+  .contact__small {
+    font-size: var(--fs-small);
+    color: var(--paper-muted);
+  }
+  @media (min-width: 1024px) {
+    .contact__form {
+      grid-column: 1 / span 8;
+    }
+    .contact__aside {
+      grid-column: 10 / -1;
+      border-top: 0;
+      padding-top: 0;
+      position: sticky;
+      top: calc(var(--header-h) + 2rem);
+      align-self: start;
+    }
+  }
+</style>

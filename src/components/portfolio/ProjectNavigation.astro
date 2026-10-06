@@ -1,0 +1,130 @@
+---
+import { Picture } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { categories } from '../../content.config';
+
+interface Props {
+  previous?: CollectionEntry<'projects'> | undefined;
+  next?: CollectionEntry<'projects'> | undefined;
+}
+const { previous, next } = Astro.props;
+---
+
+<nav class="pn" aria-label="Altri progetti">
+  <div class="pn__grid">
+    {
+      next && (
+        <a class="pn__next" href={`/work/${next.data.slug}`} rel="next" data-cursor="view" data-cursor-label="NEXT">
+          <span class="pn__media" aria-hidden="true">
+            <Picture src={next.data.cover} alt="" widths={[640, 1200, 1800]} sizes="100vw" formats={['avif', 'webp']} loading="lazy" />
+          </span>
+          <span class="pn__text">
+            <span class="label">Progetto successivo</span>
+            <span class="pn__title">{next.data.title}</span>
+            <span class="label pn__meta">{categories[next.data.category]} · {next.data.year}</span>
+            <span class="pn__cta btn btn--primary btn--large">
+              <span class="btn__label">Progetto successivo</span>
+              <span class="btn__arrow" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18"><path d="M3 9h12M10 4l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+            </span>
+          </span>
+        </a>
+      )
+    }
+    {
+      previous && (
+        <a class="pn__prev" href={`/work/${previous.data.slug}`} rel="prev">
+          <span class="label muted">← Progetto precedente</span>
+          <span class="pn__prev-title">{previous.data.title}</span>
+        </a>
+      )
+    }
+  </div>
+</nav>
+
+<style>
+  .pn__grid {
+    display: grid;
+    gap: var(--space-5);
+  }
+  .pn__next {
+    position: relative;
+    display: grid;
+    align-items: end;
+    min-height: min(80svh, 40rem);
+    overflow: hidden;
+    border: 1px solid var(--color-line);
+    isolation: isolate;
+  }
+  .pn__media {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+  }
+  .pn__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.02);
+    transition: transform 1.2s var(--ease-out);
+  }
+  .pn__next::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, rgb(9 9 10 / 0.2) 0%, rgb(9 9 10 / 0.9) 100%);
+  }
+  .pn__text {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    justify-items: start;
+  }
+  .pn__title {
+    font-size: clamp(2.5rem, 1rem + 6vw, 7rem);
+    font-weight: 700;
+    letter-spacing: -0.045em;
+    line-height: 0.92;
+    text-transform: uppercase;
+    max-width: 14ch;
+  }
+  .pn__meta {
+    color: var(--color-muted);
+  }
+  .pn__cta {
+    margin-top: var(--space-3);
+  }
+  @media (hover: hover) {
+    .pn__next:hover .pn__media :global(img) {
+      transform: scale(1.08);
+    }
+    .pn__next:hover .pn__cta::before {
+      transform: translate3d(0, 0, 0);
+    }
+    .pn__next:hover .pn__cta {
+      color: var(--btn-fill-ink);
+    }
+  }
+  .pn__next:focus-visible .pn__cta::before {
+    transform: translate3d(0, 0, 0);
+  }
+  .pn__next:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+  .pn__prev {
+    display: grid;
+    gap: 0.4rem;
+    padding: var(--space-5) 0;
+    border-top: 1px solid var(--color-line);
+    transition: color 0.3s;
+  }
+  .pn__prev-title {
+    font-size: var(--fs-h3);
+    letter-spacing: -0.03em;
+    font-weight: 600;
+  }
+  .pn__prev:hover .pn__prev-title {
+    color: var(--color-accent);
+  }
+</style>

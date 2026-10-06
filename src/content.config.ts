@@ -32,8 +32,6 @@ const projects = defineCollection({
       solution: z.string(),
       cover: image(),
       coverAlt: z.string(),
-      /** Card layout hint on the homepage / archive. */
-      format: z.enum(['portrait', 'landscape', 'wide']).default('landscape'),
       gallery: z
         .array(
           z.object({

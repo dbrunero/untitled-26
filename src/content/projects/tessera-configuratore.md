@@ -12,7 +12,6 @@ challenge: "Ogni preventivo partiva da una telefonata e da una tabella Excel. L'
 solution: "Un configuratore guidato: l'utente disegna il serramento, sceglie finitura e apertura e vede il prezzo orientativo. A fine percorso arriva al commerciale una scheda tecnica già completa, sincronizzata con il gestionale."
 cover: ../../assets/projects/tessera-configuratore/cover.jpg
 coverAlt: "Schema di un serramento con quote e pannello di scelta finiture su fondo scuro."
-format: landscape
 gallery:
   - image: ../../assets/projects/tessera-configuratore/gallery-01.jpg
     alt: "Configuratore con serramento a tre ante e finitura chiara."
@@ -29,7 +28,7 @@ metrics:
   - { value: "[XX]", label: "Configurazioni completate al mese" }
   - { value: "1", label: "Fonte unica dei prezzi (dato demo)" }
 featured: true
-order: 5
+order: 4
 credits:
   - { role: "Product design", name: "[NOME]" }
   - { role: "Frontend", name: "[NOME]" }

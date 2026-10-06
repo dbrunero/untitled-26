@@ -12,7 +12,6 @@ challenge: "Lead su caselle email, trattative su fogli condivisi, margini calcol
 solution: "Un CRM su misura con kanban delle trattative, promemoria automatici e una dashboard direzionale. Le integrazioni con il gestionale e la posta riducono l'inserimento manuale al minimo."
 cover: ../../assets/projects/rotta-crm-logistica/cover.jpg
 coverAlt: "Interfaccia di un CRM scura con grafico dei ricavi verde acido e colonne kanban."
-format: wide
 gallery:
   - image: ../../assets/projects/rotta-crm-logistica/gallery-01.jpg
     alt: "Dashboard con grafico dei ricavi e colonne delle trattative."

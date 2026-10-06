@@ -5,4 +5,5 @@ declare module 'astro:env/client' {
 	export const CONTACT_TO_EMAIL: string | undefined;	
 	export const CONTACT_FROM_EMAIL: string | undefined;	
 	export const RESEND_API_KEY: string | undefined;	
+	export const RESEND_API_URL: string | undefined;	
 }

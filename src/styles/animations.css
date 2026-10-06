@@ -11,7 +11,7 @@ html.motion [data-reveal]:not(.is-in) {
 html.motion [data-mask]:not(.is-in) {
   clip-path: inset(0 0 100% 0);
 }
-html.motion [data-mask]:not(.is-in) > * {
+html.motion [data-mask]:not(.is-in) > :first-child {
   transform: scale(1.18);
 }
 html.motion [data-lines]:not(.is-in) .line > span {
@@ -75,16 +75,16 @@ html.motion [data-lines]:not(.is-in) .line > span {
 
 @media (prefers-reduced-motion: no-preference) {
   .intro-rise > span {
-    animation: rise 1.1s var(--ease-out) both;
-    animation-delay: calc(0.12s * var(--i, 0) + 0.15s);
+    animation: rise 0.95s var(--ease-out) backwards;
+    animation-delay: calc(0.08s * var(--i, 0));
   }
   .intro-fade {
-    animation: fade-up 0.9s var(--ease-out) both;
-    animation-delay: calc(0.12s * var(--i, 0) + 0.4s);
+    animation: fade-up 0.9s var(--ease-out) backwards;
+    animation-delay: calc(0.1s * var(--i, 0) + 0.2s);
   }
   .intro-frame {
-    animation: frame-in 1.3s var(--ease-out) both;
-    animation-delay: calc(0.14s * var(--i, 0) + 0.35s);
+    animation: frame-in 1.3s var(--ease-out) backwards;
+    animation-delay: calc(0.12s * var(--i, 0) + 0.25s);
   }
 }
 

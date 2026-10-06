@@ -1,0 +1,113 @@
+---
+/** Decorative element: hidden from assistive tech. Persisted across view transitions. */
+---
+
+<div class="cursor" data-cursor-root data-state="default" aria-hidden="true" transition:persist>
+  <div class="cursor__ring" data-cursor-ring>
+    <span class="cursor__ring-shape"></span>
+    <span class="cursor__badge"><span data-cursor-label></span></span>
+  </div>
+  <div class="cursor__dot" data-cursor-dot><span class="cursor__dot-shape"></span></div>
+</div>
+
+<style is:global>
+  .cursor {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-cursor);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    mix-blend-mode: difference;
+  }
+  .cursor[data-ready='true'][data-visible='true'] {
+    opacity: 1;
+  }
+  .cursor:not([data-ready='true']) {
+    display: none;
+  }
+  .cursor__ring,
+  .cursor__dot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    will-change: transform;
+  }
+  .cursor__ring-shape {
+    display: block;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin: -1.125rem 0 0 -1.125rem;
+    border: 1px solid #f5f2eb;
+    border-radius: 50%;
+    transition:
+      transform 0.45s var(--ease-out),
+      opacity 0.3s,
+      background-color 0.3s,
+      border-color 0.3s;
+  }
+  .cursor__dot-shape {
+    display: block;
+    width: 0.4rem;
+    height: 0.4rem;
+    margin: -0.2rem 0 0 -0.2rem;
+    border-radius: 50%;
+    background: #f5f2eb;
+    transition: transform 0.3s var(--ease-out), opacity 0.3s;
+  }
+  /* The badge rides on the ring and shows the contextual label */
+  .cursor__badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    place-items: center;
+    width: 5.5rem;
+    height: 5.5rem;
+    margin: -2.75rem 0 0 -2.75rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    transform: scale(0);
+    transition: transform 0.45s var(--ease-spring);
+  }
+
+  .cursor[data-state='link'] .cursor__ring-shape {
+    transform: scale(1.7);
+    background: rgb(245 242 235 / 0.12);
+  }
+  .cursor[data-state='link'] .cursor__dot-shape {
+    transform: scale(0.5);
+  }
+  .cursor[data-state='text'] .cursor__ring-shape {
+    transform: scale(0.35, 0.9);
+    opacity: 0.6;
+  }
+  .cursor[data-state='text'] .cursor__dot-shape {
+    opacity: 0;
+  }
+  .cursor[data-state='hidden'] .cursor__ring-shape,
+  .cursor[data-state='hidden'] .cursor__dot-shape {
+    opacity: 0;
+  }
+  .cursor[data-pressed='true'] .cursor__ring-shape {
+    transform: scale(0.8);
+  }
+  .cursor[data-state='view'],
+  .cursor[data-state='drag'] {
+    mix-blend-mode: normal;
+  }
+  .cursor[data-state='view'] .cursor__ring-shape,
+  .cursor[data-state='drag'] .cursor__ring-shape,
+  .cursor[data-state='view'] .cursor__dot-shape,
+  .cursor[data-state='drag'] .cursor__dot-shape {
+    opacity: 0;
+  }
+  .cursor[data-state='view'] .cursor__badge,
+  .cursor[data-state='drag'] .cursor__badge {
+    transform: scale(1);
+  }
+</style>

@@ -12,7 +12,6 @@ challenge: "Un catalogo di oggetti belli presentati male: sfondi bianchi senza p
 solution: "Abbiamo fotografato l'intero catalogo in still life, con una grammatica di forme e ombre lunghe. In parallelo, un nuovo ecommerce con schede prodotto essenziali, checkout in tre passaggi e un layer di tracking server-side per leggere finalmente i dati."
 cover: ../../assets/projects/forma-atelier-ecommerce/cover.jpg
 coverAlt: "Cilindro scuro, sfera chiara e blocco verde acido su fondo carta, con ombre lunghe."
-format: portrait
 gallery:
   - image: ../../assets/projects/forma-atelier-ecommerce/gallery-01.jpg
     alt: "Blocco chiaro, sfera verde acido e cilindro scuro su fondo grigio caldo."
@@ -29,7 +28,7 @@ metrics:
   - { value: "3", label: "Passaggi di checkout (dato demo)" }
   - { value: "[XXX]", label: "Prodotti fotografati" }
 featured: true
-order: 4
+order: 5
 credits:
   - { role: "Fotografia", name: "[NOME]" }
   - { role: "Design", name: "[NOME]" }

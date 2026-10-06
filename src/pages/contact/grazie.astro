@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Button from '../../components/ui/Button.astro';
+---
+
+<BaseLayout title="Richiesta ricevuta" noindex noStickyCta>
+  <section class="section" data-theme="dark">
+    <div class="container thanks">
+      <p class="label"><span class="label__dot"></span>Grazie</p>
+      <h1 class="display">RICHIESTA <span class="serif accent">ricevuta.</span></h1>
+      <p class="lead muted">Ti rispondiamo entro un giorno lavorativo.</p>
+      <Button href="/work">Guarda i progetti</Button>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .thanks {
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+    padding-top: calc(var(--header-h) + var(--space-7));
+    min-height: 70svh;
+    align-content: center;
+  }
+</style>

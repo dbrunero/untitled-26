@@ -1,0 +1,45 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/home/Hero.astro';
+import Marquee from '../components/home/Marquee.astro';
+import Manifesto from '../components/home/Manifesto.astro';
+import Services from '../components/home/Services.astro';
+import FeaturedWork from '../components/home/FeaturedWork.astro';
+import Results from '../components/home/Results.astro';
+import DigitalProducts from '../components/home/DigitalProducts.astro';
+import Process from '../components/home/Process.astro';
+import Testimonials from '../components/home/Testimonials.astro';
+import ContactSection from '../components/home/ContactSection.astro';
+
+const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const featured = all.filter((p) => p.data.featured);
+const bySlug = (slug: string) => all.find((p) => p.data.slug === slug);
+
+const heroVisuals = [
+  { entry: bySlug('nuvola-lab-skincare'), caption: 'Still life' },
+  { entry: bySlug('festival-linea-live'), caption: 'Eventi' },
+  { entry: bySlug('rotta-crm-logistica'), caption: 'Web app' },
+  { entry: bySlug('casa-marea-social'), caption: 'Social' },
+]
+  .filter((v): v is { entry: NonNullable<typeof v.entry>; caption: string } => !!v.entry)
+  .map((v) => ({ src: v.entry.data.cover, caption: v.caption }));
+
+const pills = [bySlug('nuvola-lab-skincare'), bySlug('casa-marea-social'), bySlug('rotta-crm-logistica')]
+  .filter((p): p is NonNullable<typeof p> => !!p)
+  .map((p) => p.data.cover);
+const servicePreview = (bySlug('forma-atelier-ecommerce') ?? all[0])!.data.cover;
+---
+
+<BaseLayout isHome description="Creative + digital studio: produzione foto e video, social, performance marketing, siti, ecommerce e software custom. Un solo partner creativo.">
+  <Hero visuals={heroVisuals} />
+  <Marquee />
+  <Manifesto pills={pills} />
+  <Services preview={servicePreview} />
+  <FeaturedWork projects={featured.length ? featured : all} />
+  <Results />
+  <DigitalProducts />
+  <Process />
+  <Testimonials />
+  <ContactSection />
+</BaseLayout>

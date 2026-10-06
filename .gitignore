@@ -1,3 +1,15 @@
 node_modules/
 dist/
+.envnode_modules
+dist
+.astro
 .env
+.env.*
+!.env.example
+test-results
+playwright-report
+.DS_Store
+
+# Local Netlify folder
+.netlify
+.netlify

@@ -1,0 +1,209 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/layout/PageHero.astro';
+import Process from '../components/home/Process.astro';
+import Button from '../components/ui/Button.astro';
+import SectionLabel from '../components/ui/SectionLabel.astro';
+import { values, team } from '../config/content';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Studio', path: '/about' },
+];
+---
+
+<BaseLayout
+  title="Studio — approccio, metodo e team"
+  description="Come lavoriamo: fotografi, strategist e sviluppatori nello stesso team, con un metodo in quattro fasi e strumenti che restano al cliente."
+  breadcrumbs={crumbs}
+>
+  <PageHero crumbs={crumbs} label="Studio">
+    <Fragment slot="title">
+      <span class="line"><span>FOTOGRAFI,</span></span>
+      <span class="line"><span>STRATEGHI,</span></span>
+      <span class="line"><span><em class="serif accent">sviluppatori.</em></span></span>
+    </Fragment>
+    <p>
+      Siamo uno studio piccolo per scelta: poche persone, tutte coinvolte dall’inizio alla fine. Così le idee non si perdono nei passaggi e ogni decisione tiene insieme immagine, messaggio e tecnologia.
+    </p>
+  </PageHero>
+
+  <section class="about-approach section" data-theme="light" aria-labelledby="approach-title">
+    <div class="container about-approach__grid">
+      <div data-reveal><SectionLabel index="01">Approccio</SectionLabel></div>
+      <h2 id="approach-title" class="h-section" data-lines>
+        <span class="line"><span>PRIMA IL PERCHÉ.</span></span>
+        <span class="line"><span><em class="serif accent">Poi</em> il come.</span></span>
+      </h2>
+      <div class="about-approach__text prose" data-reveal>
+        <p>Un contenuto è bello se funziona. Un sito è veloce se qualcuno lo usa. Un software è utile se entra nel lavoro di tutti i giorni. Partiamo sempre da lì: cosa deve succedere dopo che qualcuno guarda, clicca, compila, acquista?</p>
+        <p>Da quella domanda discendono le scelte creative: la luce di una fotografia, il ritmo di un video, la struttura di una pagina, il modello dati di un gestionale. Meno decorazione, più intenzione.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="values section" data-theme="dark" aria-labelledby="values-title">
+    <div class="container">
+      <div data-reveal><SectionLabel index="02">Valori</SectionLabel></div>
+      <h2 id="values-title" class="sr-only">I nostri valori</h2>
+      <ol class="values__list">
+        {
+          values.map((v, i) => (
+            <li class="values__item" data-reveal>
+              <span class="label muted">0{i + 1}</span>
+              <h3 class="values__title">{v.title}</h3>
+              <p class="values__text">{v.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <Process />
+
+  <section class="team section" data-theme="dark" aria-labelledby="team-title">
+    <div class="container">
+      <div data-reveal><SectionLabel index="03">Team</SectionLabel></div>
+      <h2 id="team-title" class="h-section team__title" data-lines>
+        <span class="line"><span>LE PERSONE</span></span>
+        <span class="line"><span>DIETRO <em class="serif accent">il lavoro.</em></span></span>
+      </h2>
+      <ul class="team__grid">
+        {
+          team.map((m, i) => (
+            <li class="team__card" data-reveal data-delay={i * 0.08}>
+              <div class="team__portrait" aria-hidden="true"><span>{m.initials}</span></div>
+              <p class="team__name">{m.name}</p>
+              <p class="label muted">{m.role}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="label muted team__note" role="note">Segnaposto: sostituire con foto e nomi reali in <code>src/config/content.ts</code>.</p>
+    </div>
+  </section>
+
+  <section class="about-cta section" data-theme="light" aria-labelledby="about-cta-title">
+    <div class="container about-cta__inner">
+      <h2 id="about-cta-title" class="h-section" data-lines>
+        <span class="line"><span>LAVORIAMO</span></span>
+        <span class="line"><span><em class="serif accent">insieme?</em></span></span>
+      </h2>
+      <div class="about-cta__actions" data-reveal>
+        <Button href="/contact" size="large">Contattaci</Button>
+        <Button href="/work" variant="ghost" size="large">Guarda i progetti</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .about-approach__grid {
+    display: grid;
+    gap: var(--space-6);
+  }
+  .about-approach__grid em {
+    font-size: 1.1em;
+  }
+  @media (min-width: 1024px) {
+    .about-approach__grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--gutter);
+    }
+    .about-approach__grid > :first-child {
+      grid-column: 1 / -1;
+    }
+    .about-approach__grid > h2 {
+      grid-column: 1 / span 6;
+    }
+    .about-approach__text {
+      grid-column: 8 / -1;
+    }
+  }
+  .values__list {
+    display: grid;
+    margin-top: var(--space-6);
+    border-top: 1px solid var(--color-line);
+  }
+  .values__item {
+    display: grid;
+    gap: 0.5rem var(--space-5);
+    padding: var(--space-6) 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .values__title {
+    font-size: clamp(1.75rem, 1rem + 3vw, 4rem);
+    letter-spacing: -0.045em;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .values__text {
+    color: var(--color-muted);
+    max-width: 48ch;
+  }
+  @media (min-width: 900px) {
+    .values__item {
+      grid-template-columns: 4rem minmax(0, 1.2fr) minmax(0, 1fr);
+      align-items: baseline;
+    }
+  }
+  .team__title {
+    margin-block: var(--space-5) var(--space-8);
+  }
+  .team__title em {
+    font-size: 1.1em;
+  }
+  .team__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6) var(--gutter);
+  }
+  @media (min-width: 900px) {
+    .team__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .team__card:nth-child(even) {
+      margin-top: var(--space-7);
+    }
+  }
+  .team__portrait {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 5;
+    margin-bottom: var(--space-3);
+    border: 1px solid var(--color-line);
+    background:
+      repeating-linear-gradient(135deg, transparent 0 14px, rgb(255 255 255 / 0.03) 14px 15px),
+      linear-gradient(160deg, #202024, #101012);
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 700;
+    letter-spacing: -0.06em;
+    color: var(--color-accent);
+  }
+  .team__name {
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  .team__note {
+    margin-top: var(--space-6);
+    text-transform: none;
+    letter-spacing: 0.04em;
+  }
+  .team__note code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .about-cta__inner {
+    display: grid;
+    gap: var(--space-6);
+    justify-items: start;
+  }
+  .about-cta__inner em {
+    font-size: 1.1em;
+  }
+  .about-cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

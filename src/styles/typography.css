@@ -42,8 +42,12 @@
   color: var(--color-accent);
 }
 [data-theme='light'] .accent {
+  /* marker-style highlight: sits under the glyphs and never covers the line above */
   color: var(--paper-ink);
-  background: var(--color-accent);
+  background-image: linear-gradient(var(--color-accent), var(--color-accent));
+  background-repeat: no-repeat;
+  background-size: 100% 58%;
+  background-position: 0 88%;
   padding-inline: 0.12em;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;

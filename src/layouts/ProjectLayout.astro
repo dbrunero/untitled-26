@@ -1,0 +1,375 @@
+---
+import { Picture } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumbs from '../components/layout/Breadcrumbs.astro';
+import ProjectGallery from '../components/portfolio/ProjectGallery.astro';
+import ProjectVideo from '../components/portfolio/ProjectVideo.astro';
+import ProjectNavigation from '../components/portfolio/ProjectNavigation.astro';
+import Button from '../components/ui/Button.astro';
+import SectionLabel from '../components/ui/SectionLabel.astro';
+import { categories } from '../content.config';
+import { creativeWorkLd } from '../lib/seo';
+import { getImage } from 'astro:assets';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  previous?: CollectionEntry<'projects'> | undefined;
+  next?: CollectionEntry<'projects'> | undefined;
+}
+const { project, previous, next } = Astro.props;
+const { data } = project;
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Work', path: '/work' },
+  { name: data.title, path: `/work/${data.slug}` },
+];
+const origin = (Astro.site ?? new URL(Astro.url.origin)).origin;
+const og = await getImage({ src: data.cover, width: 1200, height: 630, format: 'jpg', fit: 'cover' });
+const description = data.seoDescription ?? data.excerpt;
+const jsonLd = [
+  creativeWorkLd(
+    {
+      title: data.title,
+      description,
+      year: data.year,
+      image: new URL(og.src, origin).toString(),
+      url: new URL(`/work/${data.slug}`, origin).toString(),
+      client: data.client,
+      services: data.services,
+    },
+    origin,
+  ),
+];
+---
+
+<BaseLayout
+  title={data.seoTitle ?? data.title}
+  description={description}
+  image={og.src}
+  imageAlt={data.coverAlt}
+  type="article"
+  breadcrumbs={crumbs}
+  jsonLd={jsonLd}
+>
+  <article class="cs">
+    <header class="cs-hero section" data-theme="dark">
+      <div class="container">
+        <Breadcrumbs crumbs={crumbs} />
+        <p class="label cs-hero__kicker"><span class="label__dot"></span>{categories[data.category]} · {data.year}</p>
+        <h1 class="h-mega cs-hero__title" data-lines>
+          <span class="line"><span>{data.title}</span></span>
+        </h1>
+        <p class="lead cs-hero__excerpt" data-reveal>{data.excerpt}</p>
+      </div>
+
+      <div class="container cs-hero__media-wrap">
+        <div class="cs-hero__media" transition:name={`cover-${data.slug}`}>
+          <Picture src={data.cover} alt={data.coverAlt} widths={[800, 1200, 1800, 2400]} sizes="(min-width: 1440px) 1360px, 100vw" formats={['avif', 'webp']} loading="eager" fetchpriority="high" decoding="async" />
+        </div>
+      </div>
+
+      <div class="container">
+        <dl class="cs-meta">
+          <div><dt class="label muted">Cliente</dt><dd>{data.client}</dd></div>
+          <div><dt class="label muted">Anno</dt><dd>{data.year}</dd></div>
+          <div><dt class="label muted">Categoria</dt><dd>{categories[data.category]}</dd></div>
+          <div class="cs-meta__wide">
+            <dt class="label muted">Servizi</dt>
+            <dd>
+              <ul class="cs-tags">{data.services.map((s) => <li class="label">{s}</li>)}</ul>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </header>
+
+    <section class="cs-story section" data-theme="light" aria-labelledby="cs-story-title">
+      <div class="container cs-story__grid">
+        <div data-reveal>
+          <SectionLabel index="01">La sfida</SectionLabel>
+          <h2 id="cs-story-title" class="h-title cs-story__h">Da dove siamo partiti</h2>
+          <p class="lead cs-story__p">{data.challenge}</p>
+        </div>
+        <div data-reveal data-delay="0.1">
+          <SectionLabel index="02">La soluzione</SectionLabel>
+          <h2 class="h-title cs-story__h">Cosa abbiamo costruito</h2>
+          <p class="lead cs-story__p">{data.solution}</p>
+        </div>
+        <div class="cs-story__body prose" data-reveal>
+          <slot />
+        </div>
+      </div>
+    </section>
+
+    {
+      data.metrics.length > 0 && (
+        <section class="cs-metrics section" data-theme="dark" aria-labelledby="cs-metrics-title">
+          <div class="container">
+            <div data-reveal><SectionLabel index="03">Risultati</SectionLabel></div>
+            <h2 id="cs-metrics-title" class="sr-only">Risultati del progetto</h2>
+            <dl class="cs-metrics__list">
+              {data.metrics.map((m, i) => (
+                <div class="cs-metrics__item" data-reveal data-delay={i * 0.08}>
+                  <dt class="label muted">{m.label}</dt>
+                  <dd>{m.value}</dd>
+                </div>
+              ))}
+            </dl>
+            {data.demo && <p class="label muted cs-note" role="note">Dati dimostrativi: sostituire con risultati verificati.</p>}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      data.gallery.length > 0 && (
+        <section class="cs-gallery section" data-theme="dark" aria-labelledby="cs-gallery-title">
+          <div class="container">
+            <div data-reveal><SectionLabel index="04">Galleria</SectionLabel></div>
+            <h2 id="cs-gallery-title" class="sr-only">Galleria del progetto</h2>
+            <ProjectGallery gallery={data.gallery} />
+          </div>
+        </section>
+      )
+    }
+
+    {
+      data.videos.length > 0 && (
+        <section class="cs-videos section" data-theme="dark" aria-labelledby="cs-videos-title">
+          <div class="container">
+            <div data-reveal><SectionLabel index="05">Video</SectionLabel></div>
+            <h2 id="cs-videos-title" class="sr-only">Video del progetto</h2>
+            <div class="cs-videos__list">
+              {data.videos.map((v) => <ProjectVideo video={v} />)}
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      data.credits.length > 0 && (
+        <section class="cs-credits section" data-theme="dark" aria-labelledby="cs-credits-title">
+          <div class="container">
+            <h2 id="cs-credits-title" class="label muted">Credits</h2>
+            <dl class="cs-credits__list">
+              {data.credits.map((c) => (
+                <div><dt class="label muted">{c.role}</dt><dd>{c.name}</dd></div>
+              ))}
+            </dl>
+          </div>
+        </section>
+      )
+    }
+
+    <section class="cs-cta section" data-theme="light" aria-labelledby="cs-cta-title">
+      <div class="container cs-cta__inner">
+        <h2 id="cs-cta-title" class="h-section" data-lines>
+          <span class="line"><span>UN PROGETTO</span></span>
+          <span class="line"><span><em class="serif accent">così?</em> PARLIAMONE.</span></span>
+        </h2>
+        <div class="cs-cta__actions" data-reveal>
+          <Button href="/contact" size="large">Richiedi un preventivo</Button>
+          <Button href="/work" variant="ghost" size="large">Vedi tutti i lavori</Button>
+        </div>
+      </div>
+    </section>
+
+    <section class="cs-next section" data-theme="dark" aria-label="Navigazione tra i progetti">
+      <div class="container">
+        <ProjectNavigation previous={previous} next={next} />
+      </div>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .cs-hero {
+    padding-top: calc(var(--header-h) + var(--space-7));
+    padding-bottom: var(--space-8);
+  }
+  .cs-hero__kicker {
+    margin-top: var(--space-6);
+    display: flex;
+    align-items: center;
+  }
+  .cs-hero__title {
+    margin-top: var(--space-4);
+    font-size: clamp(3rem, 0.5rem + 10.5vw, 11rem);
+    line-height: 0.88;
+    max-width: 16ch;
+  }
+  .cs-hero__excerpt {
+    max-width: 46ch;
+    margin-top: var(--space-5);
+    color: #cfccc5;
+  }
+  .cs-hero__media-wrap {
+    margin-top: var(--space-7);
+  }
+  .cs-hero__media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border: 1px solid var(--color-line);
+    background: var(--color-surface);
+  }
+  @media (min-width: 768px) {
+    .cs-hero__media {
+      aspect-ratio: 16 / 9;
+    }
+  }
+  .cs-hero__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .cs-meta {
+    margin-top: var(--space-6);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5) var(--gutter);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-line);
+  }
+  .cs-meta dd {
+    margin: 0.4rem 0 0;
+    font-weight: 500;
+    font-size: 1.05rem;
+  }
+  .cs-meta__wide {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 900px) {
+    .cs-meta {
+      grid-template-columns: 1fr 0.6fr 1fr 2fr;
+    }
+    .cs-meta__wide {
+      grid-column: auto;
+    }
+  }
+  .cs-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .cs-tags li {
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    font-size: 0.65rem;
+  }
+
+  .cs-story__grid {
+    display: grid;
+    gap: var(--space-8) var(--gutter);
+  }
+  .cs-story__h {
+    margin: var(--space-5) 0 var(--space-4);
+    font-size: clamp(2rem, 1rem + 3vw, 4rem);
+    letter-spacing: -0.04em;
+    font-weight: 700;
+  }
+  .cs-story__p {
+    max-width: 44ch;
+  }
+  .cs-story__body {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--paper-line);
+    padding-top: var(--space-6);
+  }
+  @media (min-width: 900px) {
+    .cs-story__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .cs-story__body {
+      grid-column: 1 / span 2;
+      columns: 2;
+      column-gap: var(--gutter);
+      max-width: none;
+    }
+    .cs-story__body > * + * {
+      margin-top: 0;
+    }
+    .cs-story__body > p {
+      margin-bottom: 1.1em;
+    }
+  }
+
+  .cs-metrics__list {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-6);
+  }
+  .cs-metrics__item {
+    display: grid;
+    gap: 0.5rem;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-line);
+  }
+  .cs-metrics__item dd {
+    margin: 0;
+    order: -1;
+    font-size: clamp(3.5rem, 0.5rem + 9vw, 9rem);
+    font-weight: 700;
+    letter-spacing: -0.06em;
+    line-height: 0.9;
+    color: var(--color-accent);
+  }
+  .cs-note {
+    margin-top: var(--space-5);
+    text-transform: none;
+    letter-spacing: 0.04em;
+  }
+  @media (min-width: 900px) {
+    .cs-metrics__list {
+      grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    }
+  }
+
+  .cs-videos__list {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-6);
+  }
+  .cs-gallery .container > :global(.gal),
+  .cs-gallery :global(.gal) {
+    margin-top: var(--space-6);
+  }
+
+  .cs-credits {
+    padding-block: var(--space-8);
+    border-top: 1px solid var(--color-line);
+  }
+  .cs-credits__list {
+    display: grid;
+    gap: var(--space-5);
+    margin-top: var(--space-5);
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  }
+  .cs-credits__list dd {
+    margin: 0.35rem 0 0;
+    font-weight: 500;
+  }
+
+  .cs-cta__inner {
+    display: grid;
+    gap: var(--space-6);
+    justify-items: start;
+  }
+  .cs-cta__inner em {
+    font-size: 1.1em;
+  }
+  .cs-cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+  .cs-next {
+    padding-top: 0;
+  }
+  .cs-next .container {
+    padding-top: var(--space-8);
+  }
+</style>

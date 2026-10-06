@@ -1,0 +1,112 @@
+---
+import { results } from '../../config/content';
+import SectionLabel from '../ui/SectionLabel.astro';
+---
+
+<section class="results section" data-theme="light" aria-labelledby="results-title">
+  <div class="container">
+    <header class="results__head grid-12">
+      <div class="results__label" data-reveal><SectionLabel index="04">Risultati</SectionLabel></div>
+      <h2 id="results-title" class="h-section results__title" data-lines>
+        <span class="line"><span>NUMERI CHE</span></span>
+        <span class="line"><span>SI POSSONO <em class="serif accent">verificare.</em></span></span>
+      </h2>
+    </header>
+
+    <dl class="results__list">
+      {
+        results.items.map((item, i) => (
+          <div class="results__item" data-reveal data-delay={i * 0.08}>
+            <dt class="label muted">{item.label}</dt>
+            <dd class="results__value">{item.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    {
+      results.placeholder && (
+        <p class="results__note label" role="note">
+          <span class="results__note-dot" aria-hidden="true"></span>
+          Segnaposto: sostituire con dati verificati in <code>src/config/content.ts</code>.
+        </p>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .results__head {
+    row-gap: var(--space-5);
+    margin-bottom: var(--space-8);
+  }
+  .results__label,
+  .results__title {
+    grid-column: 1 / -1;
+  }
+  .results__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid var(--paper-ink);
+  }
+  .results__item {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: var(--space-5) var(--space-4) var(--space-6) 0;
+    border-bottom: 1px solid var(--paper-line);
+    margin: 0;
+  }
+  .results__item:nth-child(even) {
+    padding-left: var(--space-4);
+    border-left: 1px solid var(--paper-line);
+  }
+  .results__value {
+    margin: 0;
+    font-size: clamp(2.5rem, 0.5rem + 8vw, 8.5rem);
+    font-weight: 700;
+    letter-spacing: -0.06em;
+    line-height: 0.9;
+    font-variant-numeric: tabular-nums;
+  }
+  .results__note {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: var(--space-6);
+    padding: 0.5rem 0.9rem;
+    border: 1px dashed var(--paper-muted);
+    border-radius: 999px;
+    color: var(--paper-muted);
+    text-transform: none;
+    letter-spacing: 0.04em;
+  }
+  .results__note-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: #e6a700;
+  }
+  .results__note code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (min-width: 900px) {
+    .results__list {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .results__item,
+    .results__item:nth-child(even) {
+      padding: var(--space-5) var(--space-4) var(--space-7);
+      border-left: 1px solid var(--paper-line);
+      border-bottom: 0;
+    }
+    .results__item:first-child {
+      border-left: 0;
+      padding-left: 0;
+    }
+    .results__value {
+      font-size: clamp(3rem, 0.5rem + 6.2vw, 7.5rem);
+    }
+  }
+</style>

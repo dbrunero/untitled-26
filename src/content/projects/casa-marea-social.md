@@ -12,7 +12,6 @@ challenge: "Una struttura ricettiva bellissima, raccontata con foto belle e inte
 solution: "Abbiamo scritto un palinsesto di rubriche ricorrenti — alba, tavola, sera — girato in due sessioni intensive e montato in formati verticali. Le campagne Meta hanno spinto solo i contenuti che già funzionavano in organico, con un pixel configurato per misurare le richieste dirette."
 cover: ../../assets/projects/casa-marea-social/cover.jpg
 coverAlt: "Tre archi scuri affacciati sul mare al tramonto, cielo arancio e sole basso."
-format: wide
 gallery:
   - image: ../../assets/projects/casa-marea-social/gallery-01.jpg
     alt: "Due archi su un cielo rosato, sole chiaro all'orizzonte."

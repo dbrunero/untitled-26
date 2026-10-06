@@ -1,0 +1,327 @@
+---
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Button from '../ui/Button.astro';
+
+export interface HeroVisual {
+  src: ImageMetadata;
+  caption: string;
+}
+interface Props {
+  visuals: HeroVisual[];
+}
+const { visuals } = Astro.props;
+const slots = ['a', 'b', 'c', 'd'] as const;
+---
+
+<section class="hero" data-hero data-pointer-vars data-theme="dark" aria-labelledby="hero-title">
+  <div class="container hero__inner">
+    <div class="hero__copy" data-hero-copy>
+      <p class="label hero__eyebrow intro-fade" style="--i:0">
+        <span class="label__dot"></span>CREATIVE + DIGITAL STUDIO
+      </p>
+      <h1 id="hero-title" class="hero__title display">
+        <span class="line intro-rise" style="--i:0"><span>CREIAMO</span></span>
+        <span class="line intro-rise" style="--i:1"><span>COSE CHE</span></span>
+        <span class="line intro-rise" style="--i:2"><span>VALE LA PENA</span></span>
+        <span class="line intro-rise hero__serifline" style="--i:3">
+          <span><em class="serif accent">guardare.</em> <em class="serif hero__and">E usare.</em></span>
+        </span>
+      </h1>
+      <div class="hero__lower">
+        <!-- no opacity intro on the paragraph: it is the LCP candidate and must paint with the first frame -->
+        <p class="lead hero__text">
+          Contenuti, marketing e prodotti digitali progettati come un’unica esperienza di marca.
+        </p>
+        <div class="hero__cta intro-fade" style="--i:4">
+          <Button href="/work" size="large">Guarda i progetti</Button>
+          <Button href="/contact" variant="ghost" size="large">Raccontaci il tuo progetto</Button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__stage" aria-hidden="true">
+      {
+        visuals.slice(0, 4).map((v, i) => (
+          <figure class={`float float--${slots[i]}`} data-hero-float={[1.4, 0.8, 1.9, 1.1][i]} style={`--d:${[1, 0.6, 1.5, 0.8][i]}`}>
+            <div class="float__tilt">
+              <div class="float__frame intro-frame" style={`--i:${i}`}>
+                <Picture
+                  src={v.src}
+                  alt=""
+                  widths={[360, 560, 760]}
+                  sizes="(min-width: 1024px) 28vw, 44vw"
+                  formats={['avif', 'webp']}
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  fetchpriority={i === 0 ? 'high' : 'auto'}
+                  decoding="async"
+                  class="float__img"
+                />
+                <figcaption class="float__caption label">0{i + 1} — {v.caption}</figcaption>
+              </div>
+            </div>
+          </figure>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="container hero__bar intro-fade" style="--i:5">
+    <p class="hero__scroll label" aria-hidden="true"><span class="hero__scroll-line"></span>Scroll</p>
+    <p class="hero__index label muted">Foto · Video · Marketing · Software</p>
+  </div>
+  <div data-sticky-sentinel class="hero__sentinel"></div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding-top: calc(var(--header-h) + clamp(1.5rem, 4vh, 3rem));
+    display: flex;
+    flex-direction: column;
+    overflow: clip;
+    perspective: 1400px;
+    perspective-origin: 70% 40%;
+  }
+  .hero__inner {
+    position: relative;
+    flex: 1;
+    display: grid;
+    align-content: start;
+    gap: var(--space-7);
+  }
+  .hero__copy {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
+  }
+  .hero__eyebrow {
+    display: flex;
+    align-items: center;
+  }
+  .hero__title {
+    font-size: clamp(3.25rem, 0.5rem + 14.4vw, 6.75rem);
+    line-height: 0.86;
+  }
+  .hero__serifline {
+    margin-top: 0.1em;
+  }
+  .hero__serifline em {
+    font-size: 1.12em;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    text-transform: none;
+  }
+  .hero__and {
+    font-size: 0.5em !important;
+    color: var(--color-muted);
+    margin-left: 0.3em;
+  }
+  .hero__lower {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 38rem;
+    margin-top: var(--space-3);
+  }
+  .hero__text {
+    color: #cfccc5;
+  }
+  .hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+  .hero__cta :global(.btn) {
+    flex: 1 1 auto;
+  }
+  .hero__bar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-block: var(--space-5) var(--space-5);
+  }
+  .hero__scroll {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+  .hero__scroll-line {
+    position: relative;
+    display: block;
+    width: 1px;
+    height: 3rem;
+    background: var(--color-line);
+    overflow: hidden;
+  }
+  .hero__scroll-line::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--color-accent);
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__scroll-line::after {
+      animation: scroll-line 2.4s var(--ease-in-out) infinite;
+    }
+  }
+  .hero__index {
+    display: none;
+  }
+  .hero__sentinel {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  /* ───── Floating visuals ───── */
+  .hero__stage {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+    align-items: start;
+    margin-top: calc(var(--space-4) * -1);
+  }
+  .float {
+    position: relative;
+    margin: 0;
+    will-change: auto;
+  }
+  .float__tilt {
+    transform-style: preserve-3d;
+    transform: translate3d(calc(var(--px, 0) * var(--d, 1) * -14px), calc(var(--py, 0) * var(--d, 1) * -10px), 0)
+      rotateY(calc(var(--px, 0) * var(--d, 1) * 5deg)) rotateX(calc(var(--py, 0) * var(--d, 1) * -4deg));
+    transition: transform 0.9s var(--ease-out);
+  }
+  .float__frame {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-line);
+    background: var(--color-surface);
+    box-shadow: 0 40px 80px -30px rgb(0 0 0 / 0.8);
+  }
+  .float__frame :global(.float__img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .float__caption {
+    position: absolute;
+    left: 0.75rem;
+    bottom: 0.7rem;
+    padding: 0.3rem 0.55rem;
+    background: rgb(9 9 10 / 0.72);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border-radius: 2px;
+    font-size: 0.625rem;
+  }
+  .float--a .float__frame {
+    aspect-ratio: 4 / 5;
+  }
+  .float--b .float__frame {
+    aspect-ratio: 3 / 2;
+  }
+  .float--a {
+    transform: rotate(-2deg);
+  }
+  .float--b {
+    transform: translateY(2.5rem) rotate(2deg);
+  }
+  .float--c,
+  .float--d {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .hero__title {
+      font-size: clamp(4rem, 0.5rem + 11.4vw, 9rem);
+    }
+    .hero__index {
+      display: block;
+    }
+    .hero__stage {
+      grid-template-columns: repeat(2, minmax(0, 18rem));
+      justify-content: end;
+      margin-top: calc(var(--space-6) * -1);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero {
+      perspective-origin: 70% 45%;
+    }
+    .hero__inner {
+      display: block;
+      min-height: 0;
+    }
+    .hero__title {
+      font-size: clamp(5rem, 0.5rem + 8.4vw, 10rem);
+    }
+    .hero__lower {
+      margin-top: var(--space-6);
+    }
+    .hero__stage {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      right: var(--gutter);
+      bottom: 0;
+      width: 52%;
+      display: block;
+      margin: 0;
+    }
+    .float {
+      position: absolute;
+    }
+    .float--a {
+      top: 4%;
+      right: 3%;
+      width: 40%;
+      transform: rotate(2.5deg);
+    }
+    .float--b {
+      bottom: 6%;
+      right: 36%;
+      width: 46%;
+      transform: rotate(-2deg);
+    }
+    .float--c {
+      display: block;
+      top: 1%;
+      right: 50%;
+      width: 24%;
+      transform: rotate(-4deg);
+    }
+    .float--c .float__frame {
+      aspect-ratio: 1 / 1;
+    }
+    .float--d {
+      display: block;
+      bottom: 2%;
+      right: 0;
+      width: 24%;
+      transform: rotate(4deg);
+    }
+    .float--d .float__frame {
+      aspect-ratio: 3 / 4;
+    }
+  }
+  @media (min-width: 1024px) and (max-height: 760px) {
+    .hero__title {
+      font-size: clamp(4rem, 0.5rem + 8.6vw, 8.5rem);
+    }
+  }
+</style>

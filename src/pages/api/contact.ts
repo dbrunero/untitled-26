@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { CONTACT_TO_EMAIL, CONTACT_FROM_EMAIL, RESEND_API_KEY } from 'astro:env/server';
+import { CONTACT_TO_EMAIL, CONTACT_FROM_EMAIL, RESEND_API_KEY, RESEND_API_URL } from 'astro:env/server';
 import { validateContact, type FieldErrors } from '../../lib/validation';
 import { rateLimit, sendContactEmail } from '../../lib/contact';
 
@@ -30,7 +30,7 @@ export const POST: APIRoute = async ({ request, clientAddress, url }) => {
   }
 
   const contentType = request.headers.get('content-type') ?? '';
-  let raw: Record<string, unknown> = {};
+  let raw: Record<string, unknown>;
   try {
     if (contentType.includes('application/json')) {
       raw = (await request.json()) as Record<string, unknown>;
@@ -79,7 +79,7 @@ export const POST: APIRoute = async ({ request, clientAddress, url }) => {
 
   const sent = await sendContactEmail(
     result.data,
-    { to: CONTACT_TO_EMAIL, from: CONTACT_FROM_EMAIL, apiKey: RESEND_API_KEY },
+    { to: CONTACT_TO_EMAIL, from: CONTACT_FROM_EMAIL, apiKey: RESEND_API_KEY, apiUrl: RESEND_API_URL },
     import.meta.env.DEV,
   );
 

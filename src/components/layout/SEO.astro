@@ -1,0 +1,58 @@
+---
+import { site } from '../../config/site';
+import { organizationLd, websiteLd, breadcrumbLd, type Crumb } from '../../lib/seo';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  breadcrumbs?: Crumb[];
+  jsonLd?: Array<Record<string, unknown>>;
+  /** Home uses the bare brand title. */
+  isHome?: boolean;
+}
+
+const {
+  title,
+  description = site.defaultDescription,
+  image = '/og-default.jpg',
+  imageAlt = `${site.name} — ${site.tagline}`,
+  type = 'website',
+  noindex = false,
+  breadcrumbs,
+  jsonLd = [],
+  isHome = false,
+} = Astro.props;
+
+const origin = (Astro.site ?? new URL(Astro.url.origin)).origin;
+const canonical = new URL(Astro.url.pathname, origin).toString();
+const fullTitle = isHome || !title ? `${site.name} — ${site.tagline}` : `${title} — ${site.name}`;
+const imageUrl = new URL(image, origin).toString();
+
+const graph = [organizationLd(origin), websiteLd(origin), ...(breadcrumbs ? [breadcrumbLd(breadcrumbs, origin)] : []), ...jsonLd];
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'} />
+
+<meta property="og:site_name" content={site.name} />
+<meta property="og:locale" content={site.locale} />
+<meta property="og:type" content={type} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:image:alt" content={imageAlt} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+<meta name="twitter:image:alt" content={imageAlt} />
+
+{graph.map((item) => <script type="application/ld+json" set:html={JSON.stringify(item)} />)}

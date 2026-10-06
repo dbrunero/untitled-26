@@ -1,0 +1,72 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { site, mailto } from '../config/site';
+const email = mailto();
+---
+
+<LegalLayout
+  title="Privacy Policy"
+  heading="Privacy Policy"
+  path="/privacy-policy"
+  description="Informativa sul trattamento dei dati personali raccolti tramite questo sito, ai sensi degli artt. 13 e 14 del Regolamento (UE) 2016/679."
+>
+  <p>
+    Informativa sul trattamento dei dati personali degli utenti che consultano il sito e utilizzano il modulo di contatto, ai sensi degli artt. 13 e 14 del Regolamento (UE) 2016/679 («GDPR»).
+  </p>
+
+  <h2>1. Titolare del trattamento</h2>
+  <p>
+    {site.legalName} — P.IVA {site.vat} — {site.address}, {site.city}.<br />
+    Email: {email ? <a href={email}>{site.email}</a> : site.email} · PEC: {site.pec} · Telefono: {site.phone}.<br />
+    Responsabile della protezione dei dati / referente privacy: {site.privacyOfficer}.
+  </p>
+
+  <h2>2. Dati trattati</h2>
+  <ul>
+    <li><strong>Dati forniti volontariamente</strong> tramite il modulo di contatto: nome e cognome, email, azienda, telefono (facoltativo), sito web (facoltativo), servizio richiesto, budget indicativo, tempistiche, descrizione del progetto, canale di provenienza (facoltativo).</li>
+    <li><strong>Dati di navigazione</strong>: indirizzo IP, data e ora della richiesta, pagine visitate, informazioni sul browser e sul dispositivo, trattati dai sistemi informatici che gestiscono il sito per il suo funzionamento e la sicurezza.</li>
+    <li><strong>Preferenze di consenso</strong> espresse tramite il banner cookie, memorizzate nel browser (chiave <code>site_consent_v1</code>).</li>
+    <li>[ALTRI DATI TRATTATI — es. dati di analytics o marketing se attivati, da compilare]</li>
+  </ul>
+
+  <h2>3. Finalità e basi giuridiche</h2>
+  <table>
+    <thead><tr><th>Finalità</th><th>Base giuridica</th></tr></thead>
+    <tbody>
+      <tr><td>Rispondere alle richieste inviate tramite il modulo di contatto e formulare proposte.</td><td>Misure precontrattuali su richiesta dell’interessato (art. 6.1.b GDPR).</td></tr>
+      <tr><td>Sicurezza del sito, prevenzione di abusi e spam (honeypot, limitazione delle richieste).</td><td>Legittimo interesse del Titolare (art. 6.1.f GDPR).</td></tr>
+      <tr><td>Invio di comunicazioni informative o promozionali via email.</td><td>Consenso facoltativo e revocabile (art. 6.1.a GDPR).</td></tr>
+      <tr><td>Analytics e marketing tramite cookie o tecnologie analoghe.</td><td>Consenso (art. 6.1.a GDPR e art. 122 Codice Privacy), solo se attivati. Vedi <a href="/cookie-policy">Cookie Policy</a>.</td></tr>
+      <tr><td>Adempimenti di legge, amministrativi e fiscali.</td><td>Obbligo legale (art. 6.1.c GDPR).</td></tr>
+    </tbody>
+  </table>
+
+  <h2>4. Destinatari dei dati</h2>
+  <p>
+    I dati possono essere trattati da personale autorizzato e da fornitori che agiscono come responsabili del trattamento (es. hosting, servizio di invio email [NOME PROVIDER EMAIL], strumenti di analytics o advertising se attivati). L’elenco aggiornato dei responsabili è disponibile su richiesta. I dati non sono diffusi.
+  </p>
+
+  <h2>5. Trasferimenti extra UE</h2>
+  <p>[DA COMPILARE: indicare se i fornitori utilizzati comportano il trasferimento di dati verso Paesi extra UE e le garanzie adottate (decisioni di adeguatezza, clausole contrattuali standard).]</p>
+
+  <h2>6. Periodo di conservazione</h2>
+  <ul>
+    <li>Richieste di contatto: [PERIODO — es. 24 mesi] dalla ricezione, salvo l’avvio di un rapporto contrattuale.</li>
+    <li>Dati di navigazione: [PERIODO] secondo la configurazione dei sistemi di hosting.</li>
+    <li>Preferenze cookie: fino a 12 mesi, poi il banner viene riproposto.</li>
+    <li>Dati contrattuali e fiscali: per i termini previsti dalla legge.</li>
+  </ul>
+
+  <h2>7. Diritti dell’interessato</h2>
+  <p>
+    Puoi esercitare in ogni momento i diritti di accesso, rettifica, cancellazione, limitazione, portabilità e opposizione (artt. 15–22 GDPR) e revocare il consenso, scrivendo a {email ? <a href={email}>{site.email}</a> : site.email}. Hai inoltre il diritto di proporre reclamo all’Autorità Garante per la protezione dei dati personali (<a href="https://www.garanteprivacy.it" rel="noopener noreferrer" target="_blank">garanteprivacy.it</a>).
+  </p>
+
+  <h2>8. Natura del conferimento</h2>
+  <p>
+    I campi contrassegnati come obbligatori nel modulo sono necessari per elaborare la richiesta; senza di essi non è possibile darvi seguito. Gli altri campi sono facoltativi.
+  </p>
+
+  <h2>9. Modifiche</h2>
+  <p>Il Titolare può aggiornare questa informativa. La data dell’ultimo aggiornamento è indicata in alto nella pagina.</p>
+</LegalLayout>

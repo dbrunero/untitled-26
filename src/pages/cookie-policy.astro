@@ -1,0 +1,63 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { site, cookieInventory } from '../config/site';
+---
+
+<LegalLayout
+  title="Cookie Policy"
+  heading="Cookie Policy"
+  path="/cookie-policy"
+  description="Quali cookie e tecnologie simili usa questo sito, a cosa servono, quanto durano e come gestire le preferenze."
+>
+  <p>
+    Questa pagina descrive i cookie e le tecnologie simili (come il <em>local storage</em>) utilizzati da {site.name}. Gli strumenti non necessari si attivano <strong>solo dopo il tuo consenso</strong> e puoi cambiare scelta in qualsiasi momento.
+  </p>
+
+  <p>
+    <button type="button" class="btn btn--primary" data-consent-open>Gestisci preferenze cookie</button>
+  </p>
+
+  <h2>Categorie</h2>
+  <ul>
+    <li><strong>Necessari</strong>: indispensabili al funzionamento del sito e a ricordare le tue preferenze di consenso. Non richiedono consenso e non possono essere disattivati.</li>
+    <li><strong>Analytics</strong>: misurano in forma aggregata l’utilizzo del sito. Disattivati finché non li accetti.</li>
+    <li><strong>Marketing</strong>: misurano le campagne e personalizzano gli annunci. Disattivati finché non li accetti.</li>
+  </ul>
+
+  <h2>Elenco degli strumenti</h2>
+  <p>[DA VERIFICARE: aggiornare la tabella con i cookie realmente presenti dopo ogni modifica dei servizi attivi. Strumenti non configurati non vengono caricati.]</p>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>Nome</th><th>Fornitore</th><th>Categoria</th><th>Finalità</th><th>Durata</th><th>Tipo</th></tr>
+      </thead>
+      <tbody>
+        {
+          cookieInventory.map((c) => (
+            <tr>
+              <td><code>{c.name}</code></td>
+              <td>{c.provider}</td>
+              <td>{c.category}</td>
+              <td>{c.purpose}</td>
+              <td>{c.duration}</td>
+              <td>{c.storage}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Come gestire o revocare il consenso</h2>
+  <p>
+    Puoi modificare le preferenze in ogni momento dal pulsante «Gestisci preferenze cookie» presente nel footer e in questa pagina. Se revochi un consenso, gli strumenti corrispondenti smettono di raccogliere dati e i relativi cookie conosciuti vengono eliminati; potrebbe essere necessario ricaricare la pagina. Puoi inoltre cancellare i cookie dalle impostazioni del browser.
+  </p>
+
+  <h2>Cookie di terze parti</h2>
+  <p>
+    Se attivati, Google Analytics (Google Ireland Ltd.) e Meta Pixel (Meta Platforms Ireland Ltd.) operano come fornitori autonomi o responsabili secondo i rispettivi accordi. Per i dettagli consulta le informative dei fornitori. [DA COMPLETARE con i link e i ruoli corretti.]
+  </p>
+
+  <h2>Maggiori informazioni</h2>
+  <p>Per come trattiamo i dati personali consulta la <a href="/privacy-policy">Privacy Policy</a>.</p>
+</LegalLayout>

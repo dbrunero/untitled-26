@@ -1,0 +1,248 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/layout/PageHero.astro';
+import ContactSection from '../../components/home/ContactSection.astro';
+import Button from '../../components/ui/Button.astro';
+import SectionLabel from '../../components/ui/SectionLabel.astro';
+import { faqs } from '../../config/content';
+import { site, mailto, safeUrl } from '../../config/site';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Contatti', path: '/contact' },
+];
+const email = mailto();
+const calendar = safeUrl(site.calendarUrl);
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+
+<BaseLayout
+  title="Contatti — raccontaci il progetto"
+  description="Scrivici obiettivi, contesto e tempi: rispondiamo entro un giorno lavorativo con una proposta di passi successivi. Modulo, recapiti e FAQ."
+  breadcrumbs={crumbs}
+  jsonLd={[faqLd]}
+  noStickyCta
+>
+  <PageHero crumbs={crumbs} label="Contatti">
+    <Fragment slot="title">
+      <span class="line"><span>PARLIAMO</span></span>
+      <span class="line"><span>DEL <em class="serif accent">progetto.</em></span></span>
+    </Fragment>
+    <p>Qualche riga basta: obiettivo, contesto, scadenze. Il resto lo scopriamo insieme in una prima call.</p>
+  </PageHero>
+
+  <ContactSection heading={false} />
+
+  <section class="times section" data-theme="dark" aria-labelledby="times-title">
+    <div class="container">
+      <div data-reveal><SectionLabel index="02">Cosa succede dopo</SectionLabel></div>
+      <h2 id="times-title" class="sr-only">Tempi di risposta</h2>
+      <ol class="times__list">
+        <li data-reveal><span class="times__n">24h</span><h3>Risposta</h3><p>Leggiamo il messaggio e ti scriviamo con domande e un primo orientamento.</p></li>
+        <li data-reveal data-delay="0.08"><span class="times__n">30′</span><h3>Prima call</h3><p>Ci raccontiamo contesto e obiettivi, senza slide e senza impegno.</p></li>
+        <li data-reveal data-delay="0.16"><span class="times__n">3–5g</span><h3>Proposta</h3><p>Perimetro, tempi e costi chiari, divisi per fase. Tempi indicativi, da confermare.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="call section" data-theme="light" id="call" aria-labelledby="call-title">
+    <div class="container call__inner">
+      <h2 id="call-title" class="h-section" data-lines>
+        <span class="line"><span>PREFERISCI</span></span>
+        <span class="line"><span>UNA <em class="serif accent">call?</em></span></span>
+      </h2>
+      <div class="call__text" data-reveal>
+        <p class="lead">Prenota 30 minuti nel calendario: ti colleghi, ci racconti il progetto e capiamo se e come possiamo aiutarti.</p>
+        <div class="call__actions">
+          {
+            calendar ? (
+              <Button href={calendar} target="_blank" rel="noopener">Prenota una call</Button>
+            ) : (
+              <p class="call__placeholder label" role="note">
+                <span class="results-dot" aria-hidden="true"></span>
+                Link calendario da inserire in <code>src/config/site.ts</code> (calendarUrl).
+              </p>
+            )
+          }
+          {email && <Button href={email} variant="ghost">Scrivici direttamente</Button>}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq section" data-theme="dark" aria-labelledby="faq-title">
+    <div class="container faq__grid">
+      <div>
+        <div data-reveal><SectionLabel index="03">FAQ</SectionLabel></div>
+        <h2 id="faq-title" class="h-section" data-lines>
+          <span class="line"><span>DOMANDE</span></span>
+          <span class="line"><span><em class="serif accent">frequenti.</em></span></span>
+        </h2>
+      </div>
+      <div class="faq__list" data-reveal>
+        {
+          faqs.map((f) => (
+            <details class="faq__item">
+              <summary>
+                <span>{f.q}</span>
+                <span class="faq__icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18"><path d="M9 3v12M3 9h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg></span>
+              </summary>
+              <p>{f.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="alt section" data-theme="dark" aria-label="Altre strade" style="padding-top:0">
+    <div class="container alt__inner">
+      <Button href="/work" variant="ghost" size="large">Guarda i progetti</Button>
+      <Button href="/services" variant="ghost" size="large">Esplora i servizi</Button>
+      <Button href="/about" variant="ghost" size="large">Conosci lo studio</Button>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .times__list {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-6);
+  }
+  .times__list li {
+    display: grid;
+    gap: 0.6rem;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-line);
+  }
+  .times__n {
+    font-size: clamp(3.5rem, 0.5rem + 8vw, 8rem);
+    font-weight: 700;
+    letter-spacing: -0.06em;
+    line-height: 0.9;
+    color: var(--color-accent);
+  }
+  .times__list h3 {
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+  .times__list p {
+    color: var(--color-muted);
+    max-width: 34ch;
+  }
+  @media (min-width: 900px) {
+    .times__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--gutter);
+    }
+  }
+  .call__inner {
+    display: grid;
+    gap: var(--space-6);
+  }
+  .call__inner em {
+    font-size: 1.1em;
+  }
+  .call__text {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 46ch;
+  }
+  .call__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+  }
+  .call__placeholder {
+    display: inline-flex;
+    gap: 0.6rem;
+    align-items: center;
+    padding: 0.6rem 1rem;
+    border: 1px dashed var(--paper-muted);
+    border-radius: 999px;
+    color: var(--paper-muted);
+    text-transform: none;
+    letter-spacing: 0.04em;
+  }
+  .results-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: #e6a700;
+  }
+  .call__placeholder code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (min-width: 1024px) {
+    .call__inner {
+      grid-template-columns: 1fr 1fr;
+      align-items: end;
+    }
+  }
+  .faq__grid {
+    display: grid;
+    gap: var(--space-7);
+  }
+  .faq__grid em {
+    font-size: 1.1em;
+  }
+  .faq__list {
+    border-top: 1px solid var(--color-line);
+  }
+  .faq__item {
+    border-bottom: 1px solid var(--color-line);
+  }
+  .faq__item summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+    min-height: 4rem;
+    padding: var(--space-4) 0;
+    font-size: clamp(1.1rem, 1rem + 0.5vw, 1.4rem);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    cursor: pointer;
+    list-style: none;
+  }
+  .faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq__icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--color-line);
+    border-radius: 50%;
+    transition: transform 0.4s var(--ease-out), background-color 0.3s, color 0.3s;
+  }
+  .faq__item[open] .faq__icon {
+    transform: rotate(45deg);
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+    border-color: var(--color-accent);
+  }
+  .faq__item p {
+    padding-bottom: var(--space-5);
+    max-width: 60ch;
+    color: #cfccc5;
+  }
+  @media (min-width: 1024px) {
+    .faq__grid {
+      grid-template-columns: 5fr 7fr;
+    }
+  }
+  .alt__inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

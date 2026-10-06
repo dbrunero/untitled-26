@@ -1,0 +1,58 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends Omit<HTMLAttributes<'a'>, 'class'> {
+  href?: string;
+  variant?: 'primary' | 'dark' | 'light' | 'ghost' | 'text';
+  size?: 'compact' | 'default' | 'large';
+  arrow?: boolean;
+  magnetic?: boolean;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  loading?: boolean;
+  sticky?: boolean;
+  class?: string;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'default',
+  arrow = true,
+  magnetic = true,
+  type = 'button',
+  disabled = false,
+  loading = false,
+  sticky = false,
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'btn',
+  `btn--${variant}`,
+  size === 'compact' && 'btn--compact',
+  size === 'large' && 'btn--large',
+  sticky && 'btn--sticky',
+  loading && 'is-loading',
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+const Tag = href && !disabled ? 'a' : 'button';
+const attrs: Record<string, unknown> = Tag === 'a' ? { href } : { type, disabled, 'aria-disabled': disabled || loading ? 'true' : undefined };
+---
+
+<Tag class={classes} data-magnetic={magnetic && variant !== 'text' ? '0.25' : undefined} {...attrs} {...rest}>
+  <span class="btn__label"><slot /></span>
+  {
+    arrow && variant !== 'text' && (
+      <span class="btn__arrow" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 18 18" focusable="false">
+          <path d="M3 9h12M10 4l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+    )
+  }
+  {loading && <span class="btn__spinner" aria-hidden="true" />}
+</Tag>

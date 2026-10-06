@@ -1,0 +1,142 @@
+---
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Button from '../ui/Button.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+
+interface Props {
+  pills: ImageMetadata[];
+}
+const { pills } = Astro.props;
+const pillSizes = '160px';
+---
+
+<section class="manifesto section" data-theme="light" aria-labelledby="manifesto-title">
+  <div class="container">
+    <div data-reveal>
+      <SectionLabel index="01">Manifesto</SectionLabel>
+    </div>
+
+    <h2 id="manifesto-title" class="manifesto__title display" data-lines>
+      <span class="line">
+        <span>
+          CONTENUTI.
+          {pills[0] && <span class="pill" aria-hidden="true"><Picture src={pills[0]} alt="" widths={[160, 320]} sizes={pillSizes} formats={['avif', 'webp']} loading="lazy" /></span>}
+        </span>
+      </span>
+      <span class="line">
+        <span>
+          MARKETING.
+          {pills[1] && <span class="pill pill--tall" aria-hidden="true"><Picture src={pills[1]} alt="" widths={[160, 320]} sizes={pillSizes} formats={['avif', 'webp']} loading="lazy" /></span>}
+        </span>
+      </span>
+      <span class="line">
+        <span>
+          PRODOTTI
+          {pills[2] && <span class="pill" aria-hidden="true"><Picture src={pills[2]} alt="" widths={[160, 320]} sizes={pillSizes} formats={['avif', 'webp']} loading="lazy" /></span>}
+          DIGITALI.
+        </span>
+      </span>
+      <span class="manifesto__serif serif" data-reveal data-delay="0.2">Un solo partner creativo.</span>
+    </h2>
+
+    <div class="manifesto__body grid-12">
+      <div class="manifesto__text" data-reveal>
+        <p class="lead">
+          Non separiamo creatività, strategia, tecnologia e distribuzione. Produciamo i contenuti, costruiamo il sistema che li distribuisce e sviluppiamo gli strumenti che trasformano attenzione in risultati.
+        </p>
+        <p class="manifesto__note">
+          Meno passaggi di consegne, meno messaggi persi, più coerenza dal primo scatto all’ultima riga di codice.
+        </p>
+        <Button href="/about" variant="primary">Scopri come lavoriamo</Button>
+      </div>
+      <ol class="manifesto__pillars" data-reveal data-delay="0.1">
+        <li><span class="label">01</span><strong>Creatività</strong><span>Immagini e idee riconoscibili.</span></li>
+        <li><span class="label">02</span><strong>Strategia</strong><span>Obiettivi chiari e misurabili.</span></li>
+        <li><span class="label">03</span><strong>Tecnologia</strong><span>Strumenti solidi e su misura.</span></li>
+        <li><span class="label">04</span><strong>Distribuzione</strong><span>Canali, ads e dati sotto controllo.</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .manifesto__title {
+    margin-top: var(--space-7);
+    font-size: clamp(2.75rem, 0.4rem + 11.6vw, 10.5rem);
+    line-height: 0.86;
+  }
+  .manifesto__serif {
+    display: block;
+    margin-top: 0.12em;
+    font-size: clamp(2.25rem, 7.8vw, 9rem);
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: -0.02em;
+  }
+  .pill {
+    display: inline-block;
+    width: 1.55em;
+    height: 0.66em;
+    margin-inline: 0.04em;
+    vertical-align: 0.04em;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--paper-2);
+    border: 1px solid var(--paper-ink);
+  }
+  .pill :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .pill--tall {
+    width: 1.1em;
+  }
+  .manifesto__body {
+    margin-top: var(--space-9);
+    row-gap: var(--space-8);
+    align-items: start;
+  }
+  .manifesto__text {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+  }
+  .manifesto__note {
+    color: var(--paper-muted);
+    max-width: 44ch;
+  }
+  .manifesto__pillars {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid var(--paper-ink);
+  }
+  .manifesto__pillars li {
+    display: grid;
+    gap: 0.4rem;
+    align-content: start;
+    padding: var(--space-4) var(--space-4) var(--space-5) 0;
+    border-bottom: 1px solid var(--paper-line);
+  }
+  .manifesto__pillars strong {
+    font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    letter-spacing: -0.03em;
+  }
+  .manifesto__pillars span:last-child {
+    font-size: var(--fs-small);
+    color: var(--paper-muted);
+  }
+  @media (min-width: 1024px) {
+    .manifesto__text {
+      grid-column: 1 / span 5;
+    }
+    .manifesto__pillars {
+      grid-column: 7 / -1;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 0.5rem;
+    }
+  }
+</style>

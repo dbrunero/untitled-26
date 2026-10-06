@@ -76,7 +76,7 @@ function cosmetic(v, w, h) {
     </g>`;
   };
   const gradFor = (id) => `<linearGradient id="g${id}" x1="0" x2="1"><stop offset="0" stop-color="${tint}" stop-opacity=".95"/><stop offset=".45" stop-color="${glass}" stop-opacity=".9"/><stop offset="1" stop-color="${tint}" stop-opacity=".75"/></linearGradient>`;
-  let items = '';
+  let items;
   if (v === 0) {
     items = bottle(w * 0.42, floorY, w * 0.13, h * 0.5, 0.2, 1) + bottle(w * 0.58, floorY + 20, w * 0.17, h * 0.26, 0.28, 2);
   } else if (v === 1) {

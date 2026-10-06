@@ -1,0 +1,135 @@
+---
+import { testimonials } from '../../config/content';
+import SectionLabel from '../ui/SectionLabel.astro';
+const [main, ...rest] = testimonials.items;
+---
+
+<section class="tst section" data-theme="dark" aria-labelledby="tst-title">
+  <div class="container">
+    <header class="tst__head" data-reveal>
+      <SectionLabel index="07">Parlano di noi</SectionLabel>
+      <h2 id="tst-title" class="sr-only">Testimonianze dei clienti</h2>
+    </header>
+
+    {
+      main && (
+        <figure class="tst__main" data-reveal>
+          <span class="tst__mark serif accent" aria-hidden="true">“</span>
+          <blockquote class="tst__quote serif">
+            <p>{main.quote}</p>
+          </blockquote>
+          <figcaption class="tst__caption">
+            <span class="tst__avatar" aria-hidden="true"></span>
+            <span>
+              <strong>{main.author}</strong>
+              <span class="muted">{main.role}</span>
+            </span>
+          </figcaption>
+        </figure>
+      )
+    }
+
+    <div class="tst__more">
+      {
+        rest.map((t, i) => (
+          <figure class="tst__card" data-reveal data-delay={0.08 * (i + 1)}>
+            <blockquote><p>{t.quote}</p></blockquote>
+            <figcaption>
+              <strong>{t.author}</strong>
+              <span class="muted">{t.role}</span>
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+
+    {
+      testimonials.placeholder && (
+        <p class="tst__note label muted" role="note">Segnaposto: inserire testimonianze verificate in <code>src/config/content.ts</code>.</p>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .tst__head {
+    margin-bottom: var(--space-8);
+  }
+  .tst__main {
+    position: relative;
+    display: grid;
+    gap: var(--space-6);
+    margin: 0;
+  }
+  .tst__mark {
+    position: absolute;
+    top: -0.35em;
+    left: -0.05em;
+    font-size: clamp(8rem, 5rem + 14vw, 20rem);
+    line-height: 1;
+    opacity: 0.9;
+    pointer-events: none;
+  }
+  .tst__quote {
+    position: relative;
+    font-size: clamp(2.25rem, 1rem + 5.6vw, 6.5rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    max-width: 18ch;
+    padding-top: clamp(3rem, 1rem + 6vw, 8rem);
+    text-wrap: balance;
+  }
+  .tst__caption {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .tst__caption strong,
+  .tst__card strong {
+    display: block;
+    font-weight: 600;
+  }
+  .tst__avatar {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: repeating-linear-gradient(45deg, var(--color-line) 0 6px, transparent 6px 12px);
+    border: 1px solid var(--color-line);
+  }
+  .tst__more {
+    display: grid;
+    gap: var(--space-5);
+    margin-top: var(--space-9);
+  }
+  .tst__card {
+    margin: 0;
+    padding: var(--space-5);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-m);
+    display: grid;
+    gap: var(--space-5);
+    background: linear-gradient(160deg, #141416, #0e0e10);
+  }
+  .tst__card blockquote {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.25rem);
+    line-height: 1.1;
+  }
+  .tst__note {
+    margin-top: var(--space-6);
+    text-transform: none;
+    letter-spacing: 0.04em;
+  }
+  .tst__note code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (min-width: 768px) {
+    .tst__more {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .tst__card:nth-child(even) {
+      margin-top: var(--space-7);
+    }
+  }
+</style>

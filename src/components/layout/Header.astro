@@ -1,0 +1,250 @@
+---
+import { site, nav } from '../../config/site';
+import Button from '../ui/Button.astro';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`);
+---
+
+<header class="site-header" data-header data-over="dark">
+  <div class="container site-header__bar">
+    <a class="logo" href="/" aria-label={`${site.name} — Home`} data-magnetic="0.15">
+      <span class="logo__dot" aria-hidden="true"></span>
+      <span class="logo__text">{site.name}</span>
+    </a>
+
+    <nav class="site-nav" aria-label="Principale">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined} class="site-nav__link">
+                <span>{item.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="site-header__actions">
+      <Button href="/contact" size="compact" class="site-header__cta">Parliamo del progetto</Button>
+      <button
+        type="button"
+        class="menu-toggle"
+        data-menu-toggle
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        aria-label="Apri il menu"
+        hidden
+      >
+        <span class="menu-toggle__label" data-menu-label>Menu</span>
+        <span class="menu-toggle__icon" aria-hidden="true"><span></span><span></span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: var(--z-header);
+    height: var(--header-h);
+    color: var(--color-text);
+    transition:
+      color 0.4s var(--ease-out),
+      background-color 0.4s var(--ease-out),
+      border-color 0.4s var(--ease-out);
+    border-bottom: 1px solid transparent;
+  }
+  .site-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgb(9 9 10 / 0.72);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    backdrop-filter: blur(16px) saturate(1.2);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-out);
+  }
+  .site-header.is-scrolled {
+    border-bottom-color: color-mix(in srgb, currentColor 14%, transparent);
+  }
+  .site-header.is-scrolled::before {
+    opacity: 1;
+  }
+  .site-header[data-over='light'] {
+    color: var(--paper-ink);
+  }
+  .site-header[data-over='light']::before {
+    background: rgb(245 242 235 / 0.78);
+  }
+  .site-header.is-menu-open {
+    z-index: calc(var(--z-menu) + 1);
+    color: var(--color-text);
+  }
+  .site-header.is-menu-open::before {
+    opacity: 0;
+  }
+  .site-header.is-menu-open {
+    border-bottom-color: transparent;
+  }
+  .site-header__bar {
+    height: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .logo {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 2.75rem;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transform: translate3d(var(--mx, 0), var(--my, 0), 0);
+    transition: transform 0.5s var(--ease-out);
+  }
+  .logo__dot {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent);
+  }
+  .site-header[data-over='light'] .logo__dot {
+    background: var(--paper-ink);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--paper-ink) 18%, transparent);
+  }
+  .site-nav {
+    display: none;
+  }
+  .site-nav ul {
+    display: flex;
+    gap: var(--space-2);
+  }
+  .site-nav__link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 1rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    overflow: hidden;
+  }
+  .site-nav__link span {
+    display: block;
+    transition: transform 0.5s var(--ease-out);
+  }
+  .site-nav__link::after {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    bottom: 0.55rem;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.5s var(--ease-out);
+  }
+  .site-nav__link[aria-current='page']::after,
+  .site-nav__link:hover::after,
+  .site-nav__link:focus-visible::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  .site-nav__link[aria-current='page'] {
+    font-weight: 700;
+  }
+  .site-header__actions {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .site-header :global(.site-header__cta) {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 2.75rem;
+    padding: 0 0.25rem 0 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .menu-toggle__icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+  }
+  .menu-toggle__icon span {
+    position: absolute;
+    width: 1rem;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform 0.45s var(--ease-out);
+  }
+  .menu-toggle__icon span:first-child {
+    transform: translateY(-3px);
+  }
+  .menu-toggle__icon span:last-child {
+    transform: translateY(3px);
+  }
+  .menu-toggle[aria-expanded='true'] .menu-toggle__icon span:first-child {
+    transform: rotate(45deg);
+  }
+  .menu-toggle[aria-expanded='true'] .menu-toggle__icon span:last-child {
+    transform: rotate(-45deg);
+  }
+
+  @media (min-width: 1024px) {
+    .site-header__bar {
+      grid-template-columns: 1fr auto 1fr;
+    }
+    .site-nav {
+      display: block;
+    }
+    .site-header :global(.site-header__cta) {
+      display: inline-flex;
+    }
+    .menu-toggle {
+      display: none;
+    }
+  }
+
+  /* Without JS the toggle is hidden; keep a usable inline nav on small screens */
+  :global(html:not(.js)) .site-nav {
+    display: block;
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  :global(html:not(.js)) .site-header {
+    height: auto;
+    position: absolute;
+  }
+  :global(html:not(.js)) .site-header__bar {
+    grid-template-columns: 1fr auto;
+    padding-block: 0.5rem;
+  }
+  :global(html:not(.js)) .site-nav ul {
+    flex-wrap: wrap;
+  }
+</style>

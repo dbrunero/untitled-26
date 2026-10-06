@@ -1,0 +1,131 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
+import ProjectGrid from '../../components/portfolio/ProjectGrid.astro';
+import ProjectFilters from '../../components/portfolio/ProjectFilters';
+import Button from '../../components/ui/Button.astro';
+import { categories } from '../../content.config';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const usedCategories = Object.entries(categories)
+  .filter(([key]) => projects.some((p) => p.data.category === key))
+  .map(([value, label]) => ({ value, label }));
+const years = [...new Set(projects.map((p) => p.data.year))].sort((a, b) => b - a).map((y) => ({ value: String(y), label: String(y) }));
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Work', path: '/work' },
+];
+---
+
+<BaseLayout
+  title="Work — progetti selezionati"
+  description="Fotografia di prodotto, social, eventi, ecommerce e software custom: i progetti dello studio, con obiettivi, soluzioni e risultati."
+  breadcrumbs={crumbs}
+>
+  <section class="wk-hero" data-theme="dark">
+    <div class="container">
+      <Breadcrumbs crumbs={crumbs} />
+      <h1 class="h-mega wk-hero__title" data-lines>
+        <span class="line"><span>WORK<sup class="wk-hero__count label">({String(projects.length).padStart(2, '0')})</sup></span></span>
+        <span class="line"><span class="serif accent wk-hero__serif">selezionati.</span></span>
+      </h1>
+      <div class="wk-hero__row grid-12">
+        <p class="lead wk-hero__lead" data-reveal>
+          Un archivio di lavori in cui fotografia, comunicazione e software si tengono insieme. Filtra per categoria o anno e apri il case study per vedere sfida, soluzione e risultati.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wk-list section" data-theme="dark" aria-label="Elenco progetti">
+    <div class="container">
+      <div class="wk-filters" data-reveal>
+        <ProjectFilters client:load categories={usedCategories} years={years} total={projects.length} />
+      </div>
+      <ProjectGrid projects={projects} />
+
+      <div class="wk-empty" data-work-empty hidden>
+        <p class="h-title">Nessun progetto con questi filtri.</p>
+        <p class="muted">Prova a cambiare categoria o anno, oppure azzera i filtri.</p>
+      </div>
+
+      <aside class="wk-cta" data-reveal aria-label="Contatti">
+        <p class="h-section wk-cta__title">HAI IN MENTE <em class="serif accent">qualcosa di simile?</em></p>
+        <div class="wk-cta__actions">
+          <Button href="/contact" size="large">Richiedi un preventivo</Button>
+          <Button href="/services" variant="ghost" size="large">Esplora i servizi</Button>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .wk-hero {
+    padding-top: calc(var(--header-h) + var(--space-7));
+    padding-bottom: var(--space-8);
+  }
+  .wk-hero__title {
+    margin-top: var(--space-6);
+    font-size: clamp(5rem, 0.5rem + 19vw, 20rem);
+    line-height: 0.82;
+  }
+  .wk-hero__count {
+    font-size: 0.1em;
+    vertical-align: top;
+    margin-left: 0.3em;
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+  .wk-hero__serif {
+    font-size: 0.5em;
+    line-height: 1.05;
+    padding-top: 0.1em;
+  }
+  .wk-hero__row {
+    margin-top: var(--space-6);
+  }
+  .wk-hero__lead {
+    grid-column: 1 / -1;
+    max-width: 44ch;
+    color: #cfccc5;
+  }
+  @media (min-width: 1024px) {
+    .wk-hero__lead {
+      grid-column: 7 / span 5;
+    }
+  }
+  .wk-list {
+    padding-top: var(--space-7);
+  }
+  .wk-filters {
+    margin-bottom: var(--space-8);
+    padding-block: var(--space-5);
+    border-block: 1px solid var(--color-line);
+  }
+  .wk-empty {
+    display: grid;
+    gap: var(--space-3);
+    padding-block: var(--space-9);
+    text-align: center;
+    justify-items: center;
+  }
+  .wk-cta {
+    margin-top: var(--space-section);
+    display: grid;
+    gap: var(--space-6);
+    justify-items: start;
+  }
+  .wk-cta__title {
+    max-width: 14ch;
+  }
+  .wk-cta__title em {
+    font-size: 1.1em;
+  }
+  .wk-cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

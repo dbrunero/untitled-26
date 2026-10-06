@@ -1,0 +1,69 @@
+---
+import Breadcrumbs from './Breadcrumbs.astro';
+import type { Crumb } from '../../lib/seo';
+
+interface Props {
+  crumbs?: Crumb[];
+  label?: string;
+  theme?: 'dark' | 'light';
+  size?: 'mega' | 'display';
+}
+const { crumbs, label, theme = 'dark', size = 'mega' } = Astro.props;
+---
+
+<section class={`ph ph--${theme}`} data-theme={theme}>
+  <div class="container">
+    {crumbs && <Breadcrumbs crumbs={crumbs} />}
+    {label && <p class="label ph__label"><span class="label__dot"></span>{label}</p>}
+    <h1 class={`ph__title ${size === 'mega' ? 'h-mega' : 'display'}`} data-lines>
+      <slot name="title" />
+    </h1>
+    <div class="ph__lead lead" data-reveal>
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .ph {
+    padding-top: calc(var(--header-h) + var(--space-7));
+    padding-bottom: var(--space-8);
+  }
+  .ph--light {
+    background: var(--paper);
+    color: var(--paper-ink);
+  }
+  .ph__label {
+    margin-top: var(--space-6);
+    display: flex;
+    align-items: center;
+  }
+  .ph__title {
+    margin-top: var(--space-5);
+    font-size: clamp(4rem, 0.5rem + 15vw, 15rem);
+    line-height: 0.84;
+  }
+  .ph__title :global(em) {
+    font-size: 0.62em;
+  }
+  .ph__lead {
+    margin-top: var(--space-6);
+    max-width: 46ch;
+    color: #cfccc5;
+  }
+  .ph--light .ph__lead {
+    color: var(--paper-muted);
+  }
+  .ph--light :global(.breadcrumbs ol),
+  .ph--light :global(.breadcrumbs [aria-current='page']) {
+    color: var(--paper-muted);
+  }
+  .ph--light :global(.breadcrumbs [aria-current='page']) {
+    color: var(--paper-ink);
+  }
+  @media (min-width: 1024px) {
+    .ph__lead {
+      margin-left: 50%;
+    }
+  }
+</style>

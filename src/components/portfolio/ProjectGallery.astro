@@ -1,0 +1,87 @@
+---
+import { Picture } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  gallery: CollectionEntry<'projects'>['data']['gallery'];
+}
+const { gallery } = Astro.props;
+---
+
+{
+  gallery.length > 0 && (
+    <div class="gal" aria-label="Galleria del progetto" role="list">
+      {gallery.map((g) => (
+        <figure class={`gal__item gal__item--${g.size}`} role="listitem" data-reveal>
+          <div class="gal__media" data-mask data-parallax="4">
+            <div class="gal__scale">
+              <div class="gal__plx" data-parallax-target>
+                <Picture src={g.image} alt={g.alt} widths={[480, 800, 1200, 1800]} sizes={g.size === 'full' ? '(min-width: 1024px) 92vw, 100vw' : '(min-width: 1024px) 46vw, 100vw'} formats={['avif', 'webp']} loading="lazy" decoding="async" />
+              </div>
+            </div>
+          </div>
+          {g.caption && <figcaption class="label muted">{g.caption}</figcaption>}
+        </figure>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .gal {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--space-7) var(--gutter);
+    align-items: start;
+  }
+  .gal__item {
+    grid-column: 1 / -1;
+    margin: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .gal__media {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-line);
+    background: var(--color-surface);
+  }
+  .gal__scale,
+  .gal__plx {
+    position: absolute;
+    inset: 0;
+  }
+  .gal__plx {
+    inset: -5% 0;
+  }
+  .gal__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .gal__item--full .gal__media {
+    aspect-ratio: 16 / 9;
+  }
+  .gal__item--half .gal__media {
+    aspect-ratio: 4 / 3;
+  }
+  .gal__item--tall .gal__media {
+    aspect-ratio: 4 / 5;
+  }
+  @media (max-width: 767px) {
+    .gal__plx {
+      inset: 0;
+    }
+  }
+  @media (min-width: 768px) {
+    .gal__item--half {
+      grid-column: span 6;
+    }
+    .gal__item--tall {
+      grid-column: 2 / span 5;
+    }
+    .gal__item--tall + .gal__item--half {
+      margin-top: var(--space-9);
+    }
+  }
+</style>

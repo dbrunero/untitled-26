@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/ui/Button.astro';
+---
+
+<BaseLayout title="Pagina non trovata" noindex noStickyCta>
+  <section class="nf section" data-theme="dark">
+    <div class="container nf__inner">
+      <p class="label"><span class="label__dot"></span>Errore 404</p>
+      <h1 class="nf__code h-mega" aria-label="404">404</h1>
+      <p class="nf__serif serif accent">pagina non trovata.</p>
+      <p class="lead muted nf__text">Il link potrebbe essere errato o la pagina è stata spostata. Da qui puoi ripartire.</p>
+      <div class="nf__actions">
+        <Button href="/">Torna alla home</Button>
+        <Button href="/work" variant="ghost">Guarda i progetti</Button>
+        <Button href="/contact" variant="ghost">Contattaci</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    padding-top: calc(var(--header-h) + var(--space-6));
+  }
+  .nf__inner {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+  }
+  .nf__code {
+    font-size: clamp(8rem, 2rem + 34vw, 34rem);
+    line-height: 0.75;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--color-text);
+  }
+  .nf__serif {
+    font-size: clamp(2.5rem, 1rem + 6vw, 7rem);
+    line-height: 1;
+    margin-top: -0.1em;
+  }
+  .nf__text {
+    max-width: 38ch;
+  }
+  .nf__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+</style>

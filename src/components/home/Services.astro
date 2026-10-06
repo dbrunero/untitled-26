@@ -1,0 +1,583 @@
+---
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { serviceAreas } from '../../config/content';
+import Button from '../ui/Button.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+
+interface Props {
+  preview: ImageMetadata;
+}
+const { preview } = Astro.props;
+---
+
+<section class="svc section" data-theme="dark" aria-labelledby="services-title" id="servizi">
+  <div class="container">
+    <header class="svc__intro grid-12">
+      <div class="svc__intro-left" data-reveal>
+        <SectionLabel index="02">Servizi</SectionLabel>
+      </div>
+      <h2 id="services-title" class="h-section svc__title" data-lines>
+        <span class="line"><span>TRE AREE.</span></span>
+        <span class="line"><span>UN SOLO <em class="serif accent">flusso.</em></span></span>
+      </h2>
+      <p class="svc__lead lead muted" data-reveal data-delay="0.1">
+        Ogni servizio funziona da solo. Insieme diventano un sistema: ciò che produciamo viene distribuito, misurato e collegato agli strumenti che costruiamo.
+      </p>
+    </header>
+
+    <ul class="svc__list" data-services>
+      {
+        serviceAreas.map((area, i) => (
+          <li class:list={['svc__row', i === 0 && 'is-open']} data-service-row data-kind={area.kind} data-reveal data-delay={i * 0.08}>
+            <h3 class="svc__head">
+              <button
+                type="button"
+                class="svc__trigger"
+                id={`svc-${area.id}-t`}
+                aria-expanded={i === 0 ? 'true' : 'false'}
+                aria-controls={`svc-${area.id}-p`}
+                data-service-trigger
+              >
+                <span class="svc__idx label">{area.index} /</span>
+                <span class="svc__name">{area.label}</span>
+                <span class="svc__tag serif">{area.tagline}</span>
+                <span class="svc__icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 22 22"><path d="M11 3v16M3 11h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
+                </span>
+              </button>
+            </h3>
+            <div class="svc__panel" id={`svc-${area.id}-p`} role="region" aria-labelledby={`svc-${area.id}-t`}>
+              <div class="svc__panel-clip">
+                <div class="svc__panel-inner">
+                  <div class="svc__copy">
+                    <p class="svc__summary lead">{area.summary}</p>
+                    <ul class="svc__items">
+                      {area.items.map((item, n) => (
+                        <li style={`--n:${n}`}>
+                          <span class="label muted">{String(n + 1).padStart(2, '0')}</span>
+                          <span>{item.name}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div class="svc__preview" data-follow={area.kind === 'image' ? '' : undefined} aria-hidden="true">
+                    {area.kind === 'image' && (
+                      <div class="svc__shot">
+                        <Picture src={preview} alt="" widths={[420, 640, 900]} sizes="(min-width: 1024px) 30vw, 80vw" formats={['avif', 'webp']} loading="lazy" />
+                        <span class="svc__shot-label label">Still life · Prodotto</span>
+                      </div>
+                    )}
+                    {area.kind === 'chart' && (
+                      <div class="svc__chart">
+                        <div class="svc__chart-head label">
+                          <span>Campagna</span>
+                          <span class="svc__chart-pill">Ottimizzata</span>
+                        </div>
+                        <svg viewBox="0 0 320 160" role="presentation" focusable="false">
+                          <path class="svc__chart-grid" d="M0 40H320M0 80H320M0 120H320" />
+                          <path class="svc__chart-area" d="M0 130 C40 120 60 125 90 100 S150 90 180 70 S250 60 320 20 V160 H0Z" />
+                          <path class="svc__chart-line" d="M0 130 C40 120 60 125 90 100 S150 90 180 70 S250 60 320 20" pathLength="1" />
+                          <circle class="svc__chart-dot" cx="320" cy="20" r="6" />
+                        </svg>
+                        <div class="svc__chart-kpis">
+                          <span><i>CTR</i><b></b></span>
+                          <span><i>CPA</i><b></b></span>
+                          <span><i>ROAS</i><b></b></span>
+                        </div>
+                      </div>
+                    )}
+                    {area.kind === 'ui' && (
+                      <div class="svc__ui">
+                        <div class="svc__ui-bar"><i></i><i></i><i></i><span class="label">app.studio / preventivatore</span></div>
+                        <div class="svc__ui-body">
+                          <div class="svc__ui-side"><i></i><i></i><i></i><i></i></div>
+                          <div class="svc__ui-main">
+                            <b class="svc__ui-line" style="--w:70%"></b>
+                            <b class="svc__ui-line" style="--w:92%"></b>
+                            <b class="svc__ui-line" style="--w:56%"></b>
+                            <div class="svc__ui-chips"><i>API</i><i>CRM</i><i>ERP</i></div>
+                            <span class="svc__ui-btn">Invia preventivo →</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="svc__cta" data-reveal>
+      <Button href="/services">Esplora tutti i servizi</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .svc__intro {
+    row-gap: var(--space-5);
+    align-items: end;
+    margin-bottom: var(--space-8);
+  }
+  .svc__intro-left,
+  .svc__title,
+  .svc__lead {
+    grid-column: 1 / -1;
+  }
+  .svc__title em {
+    font-size: 1.1em;
+  }
+  .svc__lead {
+    max-width: 40ch;
+  }
+  @media (min-width: 1024px) {
+    .svc__intro-left {
+      grid-column: 1 / -1;
+    }
+    .svc__title {
+      grid-column: 1 / span 7;
+    }
+    .svc__lead {
+      grid-column: 9 / -1;
+      align-self: end;
+    }
+  }
+
+  .svc__list {
+    border-top: 1px solid var(--color-line);
+  }
+  .svc__row {
+    position: relative;
+    border-bottom: 1px solid var(--color-line);
+    transition: background-color 0.5s var(--ease-out);
+  }
+  .svc__row.is-open {
+    background: linear-gradient(90deg, rgb(194 255 31 / 0.05), transparent 60%);
+  }
+  .svc__row::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: -1px;
+    height: 1px;
+    width: 100%;
+    background: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.7s var(--ease-out);
+  }
+  .svc__row.is-open::before {
+    transform: scaleX(1);
+  }
+  .svc__head {
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+  }
+  .svc__trigger {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      'idx idx icon'
+      'name name name'
+      'tag tag tag';
+    align-items: center;
+    gap: 0.25rem var(--space-4);
+    padding-block: var(--space-5);
+    text-align: left;
+    color: inherit;
+    transition: padding 0.5s var(--ease-out);
+  }
+  .svc__idx {
+    grid-area: idx;
+    color: var(--color-muted);
+  }
+  .svc__name {
+    grid-area: name;
+    font-size: clamp(3.25rem, 0.4rem + 13vw, 11rem);
+    font-weight: 700;
+    letter-spacing: -0.055em;
+    line-height: 0.9;
+    transition: transform 0.7s var(--ease-out), color 0.4s;
+  }
+  .svc__tag {
+    grid-area: tag;
+    font-size: clamp(1.25rem, 1rem + 1.2vw, 2rem);
+    color: var(--color-muted);
+    transition: color 0.4s, transform 0.7s var(--ease-out);
+  }
+  .svc__icon {
+    grid-area: icon;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    border: 1px solid var(--color-line);
+    transition: transform 0.6s var(--ease-out), background-color 0.3s, color 0.3s, border-color 0.3s;
+  }
+  .svc__row.is-open .svc__icon {
+    transform: rotate(135deg);
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+  .svc__row.is-open .svc__name {
+    color: var(--color-accent);
+    transform: translate3d(0.5rem, 0, 0);
+  }
+  .svc__row.is-open .svc__tag {
+    color: var(--color-text);
+  }
+  .svc__trigger:focus-visible {
+    outline-offset: -4px;
+  }
+  @media (hover: hover) {
+    .svc__trigger:hover .svc__name {
+      transform: translate3d(0.75rem, 0, 0);
+    }
+  }
+  @media (min-width: 900px) {
+    .svc__trigger {
+      grid-template-columns: 5rem 1fr auto auto;
+      grid-template-areas:
+        'idx name tag icon';
+      padding-block: var(--space-6);
+    }
+    .svc__tag {
+      max-width: 14rem;
+      text-align: right;
+      line-height: 1.05;
+    }
+  }
+
+  /* Panel */
+  .svc__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition:
+      grid-template-rows 0.8s var(--ease-out),
+      visibility 0s 0.8s;
+  }
+  .svc__row.is-open .svc__panel {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition:
+      grid-template-rows 0.8s var(--ease-out),
+      visibility 0s;
+  }
+  .svc__panel-clip {
+    overflow: hidden;
+    min-height: 0;
+  }
+  .svc__panel-inner {
+    display: grid;
+    gap: var(--space-6);
+    padding-bottom: var(--space-7);
+  }
+  .svc__summary {
+    max-width: 34ch;
+    margin-bottom: var(--space-5);
+  }
+  .svc__items {
+    display: grid;
+    grid-template-columns: 1fr;
+    border-top: 1px solid var(--color-line);
+  }
+  .svc__items li {
+    display: flex;
+    gap: 1rem;
+    align-items: baseline;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--color-line);
+    font-size: 1.05rem;
+    font-weight: 500;
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+    transition: opacity 0.5s, transform 0.6s var(--ease-out);
+  }
+  .svc__row.is-open .svc__items li {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(0.25s + var(--n) * 0.04s);
+  }
+  @media (min-width: 640px) {
+    .svc__items {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--space-6);
+    }
+  }
+  @media (min-width: 900px) {
+    .svc__panel-inner {
+      grid-template-columns: 5rem minmax(0, 1.1fr) minmax(0, 0.9fr);
+      align-items: start;
+    }
+    .svc__copy {
+      grid-column: 2;
+    }
+    .svc__preview {
+      grid-column: 3;
+    }
+  }
+
+  /* Preview: image (follows pointer) */
+  .svc__preview {
+    position: relative;
+    display: grid;
+    align-content: start;
+  }
+  .svc__shot {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    max-width: 22rem;
+    overflow: hidden;
+    border: 1px solid var(--color-line);
+    transform: translate3d(var(--fx, 0px), var(--fy, 0px), 0) rotate(calc(var(--fx, 0px) * 0.04));
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 0.9s var(--ease-out) 0.15s;
+    justify-self: start;
+  }
+  .svc__row.is-open .svc__shot {
+    clip-path: inset(0 0 0 0);
+  }
+  .svc__shot :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .svc__shot-label {
+    position: absolute;
+    left: 0.75rem;
+    bottom: 0.75rem;
+    padding: 0.3rem 0.55rem;
+    background: rgb(9 9 10 / 0.75);
+    font-size: 0.625rem;
+  }
+
+  /* Preview: chart (GROW) */
+  .svc__chart {
+    max-width: 24rem;
+    padding: var(--space-4);
+    border: 1px solid var(--color-line);
+    background: var(--color-surface);
+    border-radius: var(--radius-m);
+    display: grid;
+    gap: var(--space-3);
+  }
+  .svc__chart-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--color-muted);
+  }
+  .svc__chart-pill {
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+  }
+  .svc__chart svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .svc__chart-grid {
+    stroke: var(--color-line);
+    stroke-width: 1;
+    fill: none;
+  }
+  .svc__chart-area {
+    fill: rgb(194 255 31 / 0.12);
+    opacity: 0;
+    transition: opacity 0.8s 0.6s;
+  }
+  .svc__chart-line {
+    fill: none;
+    stroke: var(--color-accent);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 1.6s var(--ease-out) 0.2s;
+  }
+  .svc__chart-dot {
+    fill: var(--color-bg);
+    stroke: var(--color-accent);
+    stroke-width: 3;
+    opacity: 0;
+    transition: opacity 0.4s 1.4s;
+  }
+  .svc__row.is-open .svc__chart-line {
+    stroke-dashoffset: 0;
+  }
+  .svc__row.is-open .svc__chart-area,
+  .svc__row.is-open .svc__chart-dot {
+    opacity: 1;
+  }
+  .svc__chart-kpis {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+  }
+  .svc__chart-kpis span {
+    display: grid;
+    gap: 0.4rem;
+  }
+  .svc__chart-kpis i {
+    font-style: normal;
+    font-size: var(--fs-micro);
+    letter-spacing: 0.14em;
+    color: var(--color-muted);
+  }
+  .svc__chart-kpis b {
+    display: block;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--color-line);
+    position: relative;
+    overflow: hidden;
+  }
+  .svc__chart-kpis b::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1s var(--ease-out) 0.6s;
+  }
+  .svc__row.is-open .svc__chart-kpis b::after {
+    transform: scaleX(var(--k, 0.7));
+  }
+  .svc__chart-kpis span:nth-child(2) b::after {
+    --k: 0.45;
+  }
+  .svc__chart-kpis span:nth-child(3) b::after {
+    --k: 0.85;
+  }
+
+  /* Preview: UI (BUILD) */
+  .svc__ui {
+    max-width: 26rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    overflow: hidden;
+  }
+  .svc__ui-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 0.8rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .svc__ui-bar i {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--color-line);
+  }
+  .svc__ui-bar span {
+    margin-left: 0.6rem;
+    color: var(--color-muted);
+    font-size: 0.6rem;
+  }
+  .svc__ui-body {
+    display: grid;
+    grid-template-columns: 3.5rem 1fr;
+    min-height: 11rem;
+  }
+  .svc__ui-side {
+    display: grid;
+    align-content: start;
+    gap: 0.6rem;
+    padding: 0.8rem;
+    border-right: 1px solid var(--color-line);
+  }
+  .svc__ui-side i {
+    height: 1.4rem;
+    border-radius: 6px;
+    background: var(--color-line);
+  }
+  .svc__ui-side i:first-child {
+    background: var(--color-accent);
+  }
+  .svc__ui-main {
+    display: grid;
+    align-content: start;
+    gap: 0.6rem;
+    padding: 1rem;
+  }
+  .svc__ui-line {
+    display: block;
+    height: 0.6rem;
+    border-radius: 999px;
+    background: var(--color-line);
+    width: 0;
+    transition: width 0.9s var(--ease-out);
+  }
+  .svc__row.is-open .svc__ui-line {
+    width: var(--w);
+  }
+  .svc__ui-line:nth-child(2) {
+    transition-delay: 0.15s;
+  }
+  .svc__ui-line:nth-child(3) {
+    transition-delay: 0.3s;
+  }
+  .svc__ui-chips {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.3rem;
+  }
+  .svc__ui-chips i {
+    font-style: normal;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-line);
+    color: var(--color-muted);
+  }
+  .svc__ui-btn {
+    justify-self: start;
+    margin-top: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+    font-size: 0.75rem;
+    font-weight: 700;
+    transform: scale(0.8);
+    opacity: 0;
+    transition: transform 0.6s var(--ease-spring) 0.7s, opacity 0.3s 0.7s;
+  }
+  .svc__row.is-open .svc__ui-btn {
+    transform: none;
+    opacity: 1;
+  }
+
+  .svc__cta {
+    margin-top: var(--space-8);
+  }
+
+  /* No JS: everything open */
+  :global(html:not(.js)) .svc__panel {
+    grid-template-rows: 1fr;
+    visibility: visible;
+  }
+  :global(html:not(.js)) .svc__items li,
+  :global(html:not(.js)) .svc__shot {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+  }
+  /* Reduced motion: no grid-row animation needed, JS still toggles state */
+</style>
