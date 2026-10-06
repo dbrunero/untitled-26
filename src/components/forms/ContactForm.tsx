@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'preact/hooks';
 import CustomSelect from '../ui/CustomSelect';
 import { budgetOptions, serviceOptions, timelineOptions } from '../../lib/form-options';
 import { fieldOrder, validateContact, validateField, type FieldErrors, type FieldName } from '../../lib/validation';
+import { formspreeEndpoint, submitContact } from '../../lib/contact';
 import '../../styles/forms.css';
 
 interface Props {
@@ -10,6 +11,8 @@ interface Props {
   /** "light" form sits on paper, "dark" on the dark surface. */
   theme?: 'light' | 'dark';
   privacyHref?: string;
+  /** Absolute URL Formspree redirects to after a no-JS submission. */
+  thanksUrl?: string;
 }
 
 interface Values {
@@ -60,7 +63,7 @@ const labels: Record<string, string> = {
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
-export default function ContactForm({ idPrefix = 'contact', theme = 'dark', privacyHref = '/privacy-policy' }: Props) {
+export default function ContactForm({ idPrefix = 'contact', theme = 'dark', privacyHref = '/privacy-policy', thanksUrl }: Props) {
   const uid = useId();
   const id = (n: string) => `${idPrefix}-${uid}-${n}`;
   const [values, setValues] = useState<Values>(initial);
@@ -74,6 +77,7 @@ export default function ContactForm({ idPrefix = 'contact', theme = 'dark', priv
   const summaryRef = useRef<HTMLDivElement>(null);
   const successRef = useRef<HTMLHeadingElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
+  const busy = useRef(false);
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
     setHydrated(true);
@@ -124,7 +128,7 @@ export default function ContactForm({ idPrefix = 'contact', theme = 'dark', priv
 
   const onSubmit = async (event: Event) => {
     event.preventDefault();
-    if (status === 'submitting') return; // prevent double submit
+    if (busy.current) return; // prevent double submit (ref: state updates are async)
     const result = validateContact(values);
     if (!result.success) {
       setErrors(result.errors);
@@ -135,6 +139,7 @@ export default function ContactForm({ idPrefix = 'contact', theme = 'dark', priv
       requestAnimationFrame(() => first && focusField(first));
       return;
     }
+    busy.current = true;
     setShowSummary(false);
     setErrors({});
     setStatus('submitting');
@@ -142,33 +147,26 @@ export default function ContactForm({ idPrefix = 'contact', theme = 'dark', priv
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 15000);
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(values),
-        signal: controller.signal,
-      });
-      const data = (await response.json().catch(() => ({}))) as { ok?: boolean; message?: string; errors?: FieldErrors; mode?: string };
-      if (response.ok && data.ok) {
-        setDevPreview(data.mode === 'dev-preview');
+      const outcome = await submitContact(result.data, controller.signal);
+      if (outcome.ok) {
+        setDevPreview(outcome.mode === 'dev-preview');
         setStatus('success');
         return;
       }
-      if (response.status === 400 && data.errors) {
-        setErrors(data.errors);
+      if (outcome.reason === 'validation' && outcome.errors) {
+        const serverErrors = outcome.errors;
+        setErrors(serverErrors);
         setShowSummary(true);
         setStatus('idle');
-        const first = fieldOrder.find((k) => data.errors?.[k]);
+        const first = fieldOrder.find((k) => serverErrors[k]);
         requestAnimationFrame(() => first && focusField(first));
         return;
       }
-      setServerMessage(data.message ?? 'Non siamo riusciti a inviare il messaggio. Riprova tra poco.');
-      setStatus('error');
-    } catch {
-      setServerMessage('Connessione assente o troppo lenta. Controlla la rete e riprova.');
+      setServerMessage(outcome.message);
       setStatus('error');
     } finally {
       window.clearTimeout(timeout);
+      busy.current = false;
     }
   };
 
@@ -195,7 +193,7 @@ export default function ContactForm({ idPrefix = 'contact', theme = 'dark', priv
         <p>Grazie: ti rispondiamo entro un giorno lavorativo, con una prima proposta di passi successivi.</p>
         {devPreview && (
           <p class="form-note" role="note">
-            Modalità sviluppo: il provider email non è configurato, quindi il messaggio non è stato realmente inviato.
+            Modalità sviluppo: PUBLIC_FORMSPREE_ID non è configurato, quindi il messaggio non è stato realmente inviato.
           </p>
         )}
         <button type="button" class="btn btn--text" onClick={reset}>
@@ -227,7 +225,8 @@ export default function ContactForm({ idPrefix = 'contact', theme = 'dark', priv
       ref={formRef}
       class={`form form--${theme}`}
       method="post"
-      action="/api/contact"
+      action={formspreeEndpoint() ?? undefined}
+      accept-charset="UTF-8"
       noValidate
       aria-busy={submitting}
       data-hydrated={hydrated ? 'true' : 'false'}
@@ -408,11 +407,13 @@ export default function ContactForm({ idPrefix = 'contact', theme = 'dark', priv
         </div>
       </div>
 
+      {thanksUrl && <input type="hidden" name="_next" value={thanksUrl} />}
+
       {/* Honeypot: invisible to people and assistive tech, tempting for bots. */}
       <div class="hp" aria-hidden="true">
         <label>
           Lascia vuoto questo campo
-          <input type="text" name="hp" tabIndex={-1} autoComplete="off" value={values.hp} onInput={(e) => setField('hp', e.currentTarget.value)} />
+          <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" value={values.hp} onInput={(e) => setField('hp', e.currentTarget.value)} />
         </label>
       </div>
 

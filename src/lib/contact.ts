@@ -1,107 +1,88 @@
-import type { ContactData } from './validation';
+/**
+ * Contact form delivery through Formspree (https://formspree.io).
+ * The site is fully static: the browser posts straight to the Formspree endpoint, so there is
+ * no server code and no secret to protect (the form ID is public by design).
+ *
+ * To switch provider (Web3Forms, Basin, a serverless function…) replace `submitContact`:
+ * the form component only depends on `SubmitResult`.
+ */
+import { PUBLIC_FORMSPREE_ID } from 'astro:env/client';
+import type { ContactData, FieldErrors, FieldName } from './validation';
+import { fieldOrder } from './validation';
 import { labelFor, serviceOptions, budgetOptions, timelineOptions } from './form-options';
 
-export interface MailConfig {
-  to?: string | undefined;
-  from?: string | undefined;
-  apiKey?: string | undefined;
-  /** Defaults to https://api.resend.com */
-  apiUrl?: string | undefined;
-}
-
-export type SendResult =
+export type SubmitResult =
   | { ok: true; mode: 'sent' | 'dev-preview' }
-  | { ok: false; reason: 'not-configured' | 'provider-error' };
+  | { ok: false; reason: 'not-configured' | 'validation' | 'provider-error' | 'network'; message: string; errors?: FieldErrors };
 
-const escapeHtml = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] ?? c);
+const isConfigured = (id: string | undefined): id is string => !!id && /^[a-zA-Z0-9]{6,}$/.test(id.trim());
 
-export function buildMessage(data: ContactData) {
-  const rows: Array<[string, string]> = [
-    ['Nome', data.name],
-    ['Email', data.email],
-    ['Azienda', data.company],
-    ['Telefono', data.phone || '—'],
-    ['Sito attuale', data.website || '—'],
-    ['Servizio', labelFor(serviceOptions, data.service)],
-    ['Budget', labelFor(budgetOptions, data.budget)],
-    ['Tempistiche', labelFor(timelineOptions, data.timeline)],
-    ['Come ci ha conosciuti', data.source || '—'],
-    ['Consenso marketing', data.marketing ? 'Sì' : 'No'],
-  ];
-  const text = `${rows.map(([k, v]) => `${k}: ${v}`).join('\n')}\n\nProgetto:\n${data.message}\n`;
-  const html = `<table cellpadding="6" style="font-family:system-ui,sans-serif;font-size:14px">${rows
-    .map(([k, v]) => `<tr><th align="left">${escapeHtml(k)}</th><td>${escapeHtml(v)}</td></tr>`)
-    .join('')}</table><h3 style="font-family:system-ui,sans-serif">Progetto</h3><p style="font-family:system-ui,sans-serif;white-space:pre-wrap">${escapeHtml(data.message)}</p>`;
-  return { subject: `Nuova richiesta dal sito — ${data.company}`, text, html };
+/** Formspree endpoint, or null while PUBLIC_FORMSPREE_ID is missing. */
+export const formspreeEndpoint = (): string | null =>
+  isConfigured(PUBLIC_FORMSPREE_ID) ? `https://formspree.io/f/${PUBLIC_FORMSPREE_ID.trim()}` : null;
+
+/** What lands in the inbox: readable labels instead of internal option values. */
+export function buildPayload(data: ContactData): Record<string, string> {
+  return {
+    name: data.name,
+    email: data.email, // Formspree uses "email" as reply-to
+    company: data.company,
+    phone: data.phone || '—',
+    website: data.website || '—',
+    service: labelFor(serviceOptions, data.service),
+    budget: labelFor(budgetOptions, data.budget),
+    timeline: labelFor(timelineOptions, data.timeline),
+    message: data.message,
+    source: data.source || '—',
+    privacy: 'Accettata',
+    marketing: data.marketing ? 'Sì' : 'No',
+    _subject: `Nuova richiesta dal sito — ${data.company}`,
+  };
 }
 
-/**
- * Email provider adapter. Resend is the default; swap this function to use
- * Postmark, SES, SMTP… The rest of the app only depends on `SendResult`.
- */
-export async function sendContactEmail(data: ContactData, config: MailConfig, isDev: boolean): Promise<SendResult> {
-  const { to, from, apiKey, apiUrl = 'https://api.resend.com' } = config;
-  const message = buildMessage(data);
+interface FormspreeError {
+  field?: string;
+  code?: string;
+  message?: string;
+}
 
-  if (!to || !from || !apiKey) {
-    if (isDev) {
-      // Dev-only preview. Never log personal data: only the shape of the request.
-      console.info('[contact] dev preview — provider not configured. Fields received:', {
-        service: data.service,
-        budget: data.budget,
-        timeline: data.timeline,
-        messageLength: data.message.length,
-      });
-      return { ok: true, mode: 'dev-preview' };
-    }
-    return { ok: false, reason: 'not-configured' };
+export async function submitContact(data: ContactData, signal?: AbortSignal): Promise<SubmitResult> {
+  // Honeypot: bots get a silent "success", nothing is sent.
+  if (data.hp) return { ok: true, mode: 'sent' };
+
+  const endpoint = formspreeEndpoint();
+  if (!endpoint) {
+    // Development only: let the UI be exercised without an account. Never fake success in production.
+    if (import.meta.env.DEV) return { ok: true, mode: 'dev-preview' };
+    return {
+      ok: false,
+      reason: 'not-configured',
+      message: 'Il modulo non è ancora collegato a un servizio di invio. Scrivici direttamente via email.',
+    };
   }
 
+  let response: Response;
   try {
-    const response = await fetch(`${apiUrl.replace(/\/$/, '')}/emails`, {
+    response = await fetch(endpoint, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from,
-        to: [to],
-        reply_to: data.email,
-        subject: message.subject,
-        text: message.text,
-        html: message.html,
-      }),
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(buildPayload(data)),
+      ...(signal ? { signal } : {}),
     });
-    if (!response.ok) {
-      console.error('[contact] provider responded with status', response.status);
-      return { ok: false, reason: 'provider-error' };
-    }
-    return { ok: true, mode: 'sent' };
   } catch {
-    console.error('[contact] provider request failed');
-    return { ok: false, reason: 'provider-error' };
+    return { ok: false, reason: 'network', message: 'Connessione assente o troppo lenta. Controlla la rete e riprova.' };
   }
-}
 
-/* ---------- naive in-memory rate limiter (per process) ---------- */
-const hits = new Map<string, number[]>();
-const WINDOW_MS = 10 * 60 * 1000;
-const MAX_HITS = 5;
+  if (response.ok) return { ok: true, mode: 'sent' };
 
-/**
- * Limits submissions per client key. In-memory: good enough for a single Node
- * process. Behind serverless/multi-instance deployments use a shared store
- * (Upstash, KV…) or the platform's WAF rate limiting.
- */
-export function rateLimit(key: string, now = Date.now()): { allowed: boolean; retryAfter: number } {
-  const recent = (hits.get(key) ?? []).filter((t) => now - t < WINDOW_MS);
-  if (recent.length >= MAX_HITS) {
-    const oldest = recent[0] ?? now;
-    return { allowed: false, retryAfter: Math.ceil((WINDOW_MS - (now - oldest)) / 1000) };
+  const body = (await response.json().catch(() => ({}))) as { errors?: FormspreeError[] };
+  const errors: FieldErrors = {};
+  for (const e of body.errors ?? []) {
+    if (e.field && (fieldOrder as string[]).includes(e.field)) {
+      errors[e.field as FieldName] = e.code === 'TYPE_EMAIL' ? 'Inserisci un’email valida, per esempio nome@azienda.it.' : (e.message ?? 'Valore non valido.');
+    }
   }
-  recent.push(now);
-  hits.set(key, recent);
-  if (hits.size > 5000) {
-    for (const [k, v] of hits) if (v.every((t) => now - t >= WINDOW_MS)) hits.delete(k);
-  }
-  return { allowed: true, retryAfter: 0 };
+  if (Object.keys(errors).length) return { ok: false, reason: 'validation', message: 'Controlla i campi evidenziati.', errors };
+  if (response.status === 429) return { ok: false, reason: 'provider-error', message: 'Troppe richieste in poco tempo. Riprova tra qualche minuto.' };
+  return { ok: false, reason: 'provider-error', message: 'Non siamo riusciti a inviare il messaggio. Riprova tra poco o scrivici via email.' };
 }

@@ -48,7 +48,7 @@ export const contactSchema = z.object({
   privacy: z.literal(true, { error: 'Per procedere devi confermare di aver letto l’informativa privacy.' }),
   marketing: z.boolean().optional().default(false),
   /** Honeypot: real users never see or fill this field. */
-  hp: z.string().max(0).optional().default(''),
+  hp: z.string().max(500).optional().default(''),
 });
 
 export type ContactInput = z.input<typeof contactSchema>;

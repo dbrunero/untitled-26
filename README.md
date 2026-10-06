@@ -1,6 +1,6 @@
 # [NOME AGENZIA] — Portfolio site (Concept A · Editorial Motion)
 
-Sito portfolio e lead generation di una creative web agency, costruito con **Astro 7**, TypeScript strict, GSAP + ScrollTrigger e isole Preact solo dove servono (form, select accessibile, consenso cookie, filtri).
+Sito portfolio e lead generation di una creative web agency, statico (SSG), costruito con **Astro 7**, TypeScript strict, GSAP + ScrollTrigger e isole Preact solo dove servono (form, select accessibile, consenso cookie, filtri).
 
 Direzione visiva: editoriale, cinematografica, minimale. Space Grotesk + Instrument Serif Italic, nero `#09090A`, carta `#F5F2EB`, accento acid green `#C2FF1F`.
 
@@ -17,13 +17,11 @@ Direzione visiva: editoriale, cinematografica, minimale. Space Grotesk + Instrum
 ```bash
 pnpm install
 pnpm dev            # sviluppo → http://localhost:4321
-pnpm build          # build Netlify (statico + 1 function)
-pnpm build:node     # build con adapter Node standalone
+pnpm build          # build statica (SSG) in dist/
 pnpm preview        # anteprima della build
-pnpm start          # avvia il server Node (dopo build:node)
 pnpm typecheck      # astro check (TypeScript 6)
 pnpm lint           # ESLint
-pnpm test           # Playwright (build + server Node + mock provider email)
+pnpm test           # Playwright sulla build statica (Formspree intercettato, mai contattato)
 pnpm placeholders   # rigenera le immagini segnaposto
 ```
 
@@ -42,16 +40,16 @@ src/
     forms/       ContactForm (Preact)
     consent/     CookieBanner, CookiePreferences (Preact, <dialog> nativo)
   layouts/       BaseLayout, ProjectLayout, LegalLayout
-  lib/           validation (Zod condiviso client/server), contact (provider email + rate limit), consent, third-party, seo
+  lib/           validation (Zod), contact (invio a Formspree), consent, third-party, seo
   scripts/       core/ (lifecycle, gsap loader, env) · site/ (header, cursor, magnetic…) · animations/ (GSAP, lazy)
   styles/        tokens, fonts, global, typography, animations, buttons, forms, consent
-  pages/         index, work/, services, about, contact/, privacy-policy, cookie-policy, 404, api/contact, robots.txt
+  pages/         index, work/, services, about, contact/, privacy-policy, cookie-policy, 404, robots.txt
 tests/           Playwright (smoke, menu, consenso, form, work, motion)
 ```
 
 ## Route
 
-`/` · `/work` · `/work/[slug]` · `/services` · `/about` · `/contact` · `/contact/grazie` (noindex) · `/privacy-policy` · `/cookie-policy` · `/404` · `/robots.txt` · `/sitemap-index.xml` · `POST /api/contact`
+`/` · `/work` · `/work/[slug]` · `/services` · `/about` · `/contact` · `/contact/grazie` (noindex) · `/privacy-policy` · `/cookie-policy` · `/404` · `/robots.txt` · `/sitemap-index.xml`
 
 ## Portfolio
 
@@ -92,13 +90,22 @@ Testo libero (Markdown) mostrato nel case study.
 
 Il filtro di `/work` usa categoria e anno e salva lo stato in `?categoria=…&anno=…`. Funziona anche con progetti senza video, metriche o gallery.
 
-## Form di contatto
+## Form di contatto (Formspree)
 
-- Validazione Zod condivisa (`src/lib/validation.ts`) lato client (progressiva, riepilogo errori, focus sul primo errore) e server (obbligatoria).
-- Endpoint `POST /api/contact` (unica route on-demand, Netlify Function): honeypot, controllo Origin, rate limit in memoria (5 richieste / 10 min per IP — su deploy multi-istanza usare uno store condiviso o il WAF della piattaforma), nessun dato personale nei log.
-- Provider email: **Resend** via `fetch` (`src/lib/contact.ts`). Per cambiare provider sostituisci `sendContactEmail`.
-- In `pnpm dev` senza credenziali l'invio è simulato e lo dichiara in UI. **In produzione senza credenziali risponde 503** con messaggio chiaro: non finge mai un invio riuscito.
-- Funziona anche senza JS (select nativi, POST form-data, redirect a `/contact/grazie`).
+Il sito è **statico puro (SSG)**: non c'è codice server. Il form invia direttamente a [Formspree](https://formspree.io).
+
+1. Crea un form su Formspree e copia l'ID (la parte finale di `https://formspree.io/f/XXXXXXXX`).
+2. Imposta `PUBLIC_FORMSPREE_ID=XXXXXXXX` (in `.env` in locale, nelle variabili d'ambiente di Netlify in produzione) e ribuilda.
+3. Nel pannello Formspree imposta email di destinazione, dominio consentito e, se vuoi, reCAPTCHA/filtro spam.
+
+Come funziona:
+
+- Validazione Zod lato client (`src/lib/validation.ts`): progressiva, riepilogo errori, focus sul primo errore. Dati non validi non partono.
+- `src/lib/contact.ts` è l'unico punto che parla con il provider: invia JSON con etichette leggibili, mappa gli errori di campo di Formspree, gestisce rete assente e 429. Per cambiare servizio sostituisci `submitContact`.
+- Honeypot (`_gotcha`, riconosciuto anche da Formspree) e blocco del doppio invio.
+- Senza `PUBLIC_FORMSPREE_ID`: in `pnpm dev` l'invio è simulato e dichiarato in UI; **in produzione mostra un errore chiaro e non finge mai un invio riuscito**.
+- Senza JavaScript il form resta utilizzabile: select nativi e POST diretto a Formspree, con redirect a `/contact/grazie` tramite `_next` (verifica che il tuo piano Formspree lo consenta, altrimenti compare la pagina di conferma di Formspree).
+- Non essendoci un server, validazione server-side, rate limiting e antispam sono demandati a Formspree.
 
 ## Variabili d'ambiente
 
@@ -106,9 +113,8 @@ Vedi `.env.example`.
 
 | Variabile | Dove | Note |
 | --- | --- | --- |
-| `PUBLIC_SITE_URL` | build + runtime | URL di produzione. Usato per canonical, sitemap, OG e host consentito dall'API |
-| `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`, `RESEND_API_KEY` | runtime server | obbligatorie per l'invio reale |
-| `RESEND_API_URL` | runtime server | opzionale (mock nei test) |
+| `PUBLIC_SITE_URL` | build | URL di produzione. Usato per canonical, sitemap, OG e redirect post-invio |
+| `PUBLIC_FORMSPREE_ID` | build | ID del form Formspree. Pubblico per natura |
 | `PUBLIC_GA_MEASUREMENT_ID` | build | opzionale, caricato solo con consenso Analytics |
 | `PUBLIC_META_PIXEL_ID` | build | opzionale, caricato solo con consenso Marketing |
 
@@ -137,18 +143,13 @@ Vedi `.env.example`.
 
 ## Deploy su Netlify
 
-Il sito è statico (`dist/`); solo `POST /api/contact` diventa una **Netlify Function** grazie a `@astrojs/netlify`. `netlify.toml` contiene build, cache e header di sicurezza.
+`pnpm build` produce una cartella `dist/` interamente statica: nessuna funzione, nessun adapter. `netlify.toml` contiene comando di build, cartella da pubblicare, cache e header di sicurezza.
 
-1. Collega il repository a Netlify (build `pnpm build`, publish `dist`: sono già in `netlify.toml`).
-2. In *Site configuration → Environment variables* imposta:
-   - `PUBLIC_SITE_URL` = URL definitivo (es. `https://www.tuodominio.it`) — serve a canonical, sitemap, OG e all'host consentito dall'API;
-   - `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`, `RESEND_API_KEY` (il mittente deve essere un dominio verificato su Resend);
-   - opzionali: `PUBLIC_GA_MEASUREMENT_ID`, `PUBLIC_META_PIXEL_ID` (le `PUBLIC_*` vanno impostate prima della build).
-3. Deploy. Le deploy preview `*.netlify.app` sono già ammesse dall'API.
+1. Collega il repository a Netlify.
+2. In *Site configuration → Environment variables* imposta `PUBLIC_SITE_URL` (URL definitivo), `PUBLIC_FORMSPREE_ID` e, se servono, `PUBLIC_GA_MEASUREMENT_ID` / `PUBLIC_META_PIXEL_ID`. Sono valori di build: dopo averli cambiati rilancia il deploy.
+3. Deploy. La pagina 404 personalizzata (`dist/404.html`) viene servita automaticamente.
 
-Anteprima locale con funzioni: `pnpm dlx netlify-cli dev`. Senza Netlify (VPS, Docker) usa `pnpm build:node && pnpm start` (adapter Node standalone, `ADAPTER=node`).
-
-Il rate limit in memoria è per istanza della function: su Netlify è solo una prima barriera; per limiti rigorosi usa le regole di rate limiting della piattaforma o uno store condiviso.
+La stessa `dist/` funziona su qualunque hosting statico.
 
 ## Accessibilità
 
@@ -156,7 +157,7 @@ Skip link, landmark, heading gerarchici, focus visibile, menu mobile `dialog` co
 
 ## Test
 
-`pnpm test` esegue la build, avvia il server Node e un mock Resend, e verifica: tutte le route senza errori console, assenza di overflow/testi tagliati a 1440–360 px, menu mobile, consenso (nulla prima della scelta, accetta/rifiuta/granulare, focus trap, riapertura dal footer), form (errori, invio reale al mock, doppio invio, 503 in produzione senza credenziali, honeypot, origine), select da tastiera, filtri, navigazione verso i case study, cursore, reduced motion, View Transitions.
+`pnpm test` esegue la build statica, la serve con `tests/static-server.mjs` e verifica: tutte le route senza errori console, assenza di overflow/testi tagliati a 1440–360 px, menu mobile, consenso (nulla prima della scelta, accetta/rifiuta/granulare, focus trap, riapertura dal footer), form (errori, invio a Formspree intercettato, doppio invio, errori del provider, honeypot, fallback senza JS, build senza ID che non finge l'invio), select da tastiera, filtri, navigazione verso i case study, **cursore custom su ogni pagina** (caricamento diretto e dopo navigazione client-side), reduced motion, View Transitions.
 
 ## Da sostituire / revisione legale
 
@@ -168,7 +169,7 @@ Placeholder (cerca `[` nei file elencati):
 | `src/config/content.ts` | numeri `[+XX%]`…, testimonianze `[TESTIMONIANZA CLIENTE DA INSERIRE]`, team `[NOME COGNOME]` (imposta `placeholder: false` quando sono veri) |
 | `src/content/projects/*.md` | clienti demo, metriche `[XX]`, credits `[NOME]`, `demo: true` |
 | `src/assets/projects/**`, `public/og-default.jpg`, `public/favicon.svg`, icone | immagini/loghi definitivi |
-| `src/pages/privacy-policy.astro`, `cookie-policy.astro` | `[DATA ULTIMO AGGIORNAMENTO]`, periodi di conservazione, fornitori, trasferimenti extra UE |
+| `src/pages/privacy-policy.astro`, `cookie-policy.astro` | `[DATA ULTIMO AGGIORNAMENTO]`, periodi di conservazione, fornitori (incluso Formspree, USA), trasferimenti extra UE |
 | `public/site.webmanifest` | nome agenzia |
 
 ⚠️ **Privacy Policy, Cookie Policy e banner sono strutture tecniche di partenza**: i testi legali, le basi giuridiche, i tempi di conservazione e l'elenco dei cookie devono essere verificati e approvati da un professionista. La presenza del banner non rende il sito, da sola, conforme alla normativa.

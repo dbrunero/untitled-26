@@ -13,3 +13,4 @@ playwright-report
 # Local Netlify folder
 .netlify
 .netlify
+.tmp-noform

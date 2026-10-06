@@ -215,6 +215,20 @@ html.has-cursor [role='option'],
 html.has-cursor label {
   cursor: auto;
 }
+/* Modal dialogs live in the top layer, above the custom cursor: give the native one back there. */
+html.has-cursor dialog[open],
+html.has-cursor dialog[open] * {
+  cursor: auto;
+}
+html.has-cursor dialog[open] a,
+html.has-cursor dialog[open] button,
+html.has-cursor dialog[open] label,
+html.has-cursor dialog[open] input {
+  cursor: pointer;
+}
+html:has(dialog[open]) .cursor {
+  visibility: hidden;
+}
 html.has-cursor input[type='checkbox'],
 html.has-cursor input[type='radio'] {
   cursor: pointer;

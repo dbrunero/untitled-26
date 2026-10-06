@@ -13,12 +13,22 @@ let started = false;
 export function initCursor(): void {
   if (started) return;
   started = true;
-  const root = document.querySelector<HTMLElement>('[data-cursor-root]');
-  if (!root) return;
-  const dot = root.querySelector<HTMLElement>('[data-cursor-dot]');
-  const ring = root.querySelector<HTMLElement>('[data-cursor-ring]');
-  const label = root.querySelector<HTMLElement>('[data-cursor-label]');
-  if (!dot || !ring || !label) return;
+  // The cursor markup can be replaced by a view transition, so element references are
+  // re-resolved after every swap (see `bind`) instead of being captured once.
+  let root!: HTMLElement;
+  let dot!: HTMLElement;
+  let ring!: HTMLElement;
+  let label!: HTMLElement;
+  const bind = (): boolean => {
+    const r = document.querySelector<HTMLElement>('[data-cursor-root]');
+    const d = r?.querySelector<HTMLElement>('[data-cursor-dot]');
+    const g = r?.querySelector<HTMLElement>('[data-cursor-ring]');
+    const l = r?.querySelector<HTMLElement>('[data-cursor-label]');
+    if (!r || !d || !g || !l) return false;
+    [root, dot, ring, label] = [r, d, g, l];
+    return true;
+  };
+  if (!bind()) return;
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
@@ -68,6 +78,7 @@ export function initCursor(): void {
     enabled = false;
     loop.stop();
     delete root.dataset.ready;
+    delete root.dataset.visible;
     setCursorFlag(false);
   };
 
@@ -100,6 +111,18 @@ export function initCursor(): void {
   document.documentElement.addEventListener('mouseleave', () => (root.dataset.visible = 'false'));
   document.documentElement.addEventListener('mouseenter', () => enabled && (root.dataset.visible = 'true'));
   document.addEventListener('visibilitychange', () => document.hidden && loop.stop());
-  // After a view transition the pointer may rest on new content: reset to a neutral state.
-  document.addEventListener('astro:after-swap', () => setState('default'));
+  // After a view transition: re-bind to the (possibly new) element and restore position and state,
+  // so the cursor is visible immediately on the new page without waiting for a mouse move.
+  document.addEventListener('astro:after-swap', () => {
+    if (!bind()) return;
+    state = 'hidden'; // force setState to write to the new element
+    setState('default');
+    if (!enabled) return;
+    root.dataset.ready = 'true';
+    root.dataset.visible = 'true';
+    dot.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    ring.style.transform = `translate3d(${rx.toFixed(1)}px, ${ry.toFixed(1)}px, 0)`;
+    setCursorFlag(true);
+    loop.start();
+  });
 }

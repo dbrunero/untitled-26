@@ -1,9 +1,20 @@
 import { test, expect, type Page } from '@playwright/test';
-import { spawn, type ChildProcess } from 'node:child_process';
+import { execSync, spawn, type ChildProcess } from 'node:child_process';
 import { dismissBanner, ready } from './helpers';
 
-const MOCK = 'http://127.0.0.1:4398';
-const mockState = async (): Promise<{ count: number; last: { auth: string; body: any } | null }> => (await fetch(`${MOCK}/__last`)).json();
+const FORMSPREE = 'https://formspree.io/f/testform01';
+
+/** Stands in for Formspree and records what the browser sent. */
+async function mockFormspree(page: Page, reply: { status: number; body: unknown } = { status: 200, body: { ok: true } }) {
+  const calls: Array<{ url: string; body: any; accept: string | undefined }> = [];
+  await page.route('https://formspree.io/**', async (route) => {
+    const req = route.request();
+    calls.push({ url: req.url(), body: req.postDataJSON(), accept: req.headers()['accept'] });
+    await new Promise((r) => setTimeout(r, 300));
+    await route.fulfill({ status: reply.status, contentType: 'application/json', body: JSON.stringify(reply.body) });
+  });
+  return calls;
+}
 
 async function fillValid(page: Page) {
   await page.getByLabel(/Nome e cognome/).fill('Mario Rossi');
@@ -54,34 +65,85 @@ test('progressive validation: email error appears on blur and clears when fixed'
   await expect(page.getByText('Inserisci un’email valida')).toHaveCount(0);
 });
 
-test('valid submission reaches the email provider once and shows the success state', async ({ page }) => {
+test('valid submission is posted once to Formspree and shows the success state', async ({ page }) => {
+  const calls = await mockFormspree(page);
   await openForm(page);
-  const before = (await mockState()).count;
   await fillValid(page);
-  await page.route('**/api/contact', async (route) => {
-    await new Promise((r) => setTimeout(r, 400));
-    await route.continue();
-  });
-  const submit = page.getByRole('button', { name: 'Invia il progetto' });
-  await submit.dblclick();
+  await page.getByRole('button', { name: 'Invia il progetto' }).dblclick();
   await expect(page.getByRole('heading', { name: 'Richiesta ricevuta.' })).toBeFocused();
-  const after = await mockState();
-  expect(after.count - before).toBe(1); // double click did not double submit
-  expect(after.last?.auth).toBe('Bearer re_test_key');
-  expect(after.last?.body.to).toEqual(['inbox@example.test']);
-  expect(after.last?.body.reply_to).toBe('mario@azienda.it');
-  expect(after.last?.body.subject).toContain('Azienda Demo');
-  expect(after.last?.body.text).toContain('Configuratore o preventivatore');
+  expect(calls).toHaveLength(1); // double click did not double submit
+  expect(calls[0]!.url).toBe(FORMSPREE);
+  expect(calls[0]!.accept).toContain('application/json');
+  expect(calls[0]!.body).toMatchObject({
+    name: 'Mario Rossi',
+    email: 'mario@azienda.it',
+    company: 'Azienda Demo',
+    service: 'Configuratore o preventivatore',
+    budget: '7.500–15.000 €',
+    timeline: '1–3 mesi',
+    marketing: 'No',
+  });
+  expect(calls[0]!.body._subject).toContain('Azienda Demo');
 });
 
-test.describe('production without email credentials', () => {
+test('invalid data never reaches Formspree', async ({ page }) => {
+  const calls = await mockFormspree(page);
+  await openForm(page);
+  await page.getByLabel(/Nome e cognome/).fill('Mario Rossi');
+  await page.getByRole('button', { name: 'Invia il progetto' }).click();
+  await expect(page.getByRole('alert').filter({ hasText: 'da correggere' })).toBeVisible();
+  expect(calls).toHaveLength(0);
+});
+
+test('provider errors are shown, field errors are mapped, nothing is faked', async ({ page }) => {
+  await mockFormspree(page, { status: 422, body: { errors: [{ field: 'email', code: 'TYPE_EMAIL', message: 'should be an email' }] } });
+  await openForm(page);
+  await fillValid(page);
+  await page.getByRole('button', { name: 'Invia il progetto' }).click();
+  await expect(page.getByLabel(/^Email/)).toHaveAttribute('aria-invalid', 'true');
+  await expect(page.getByLabel(/^Email/)).toBeFocused();
+  await expect(page.getByRole('heading', { name: 'Richiesta ricevuta.' })).toHaveCount(0);
+
+  await page.unroute('https://formspree.io/**');
+  await mockFormspree(page, { status: 500, body: {} });
+  await page.getByRole('button', { name: 'Invia il progetto' }).click();
+  await expect(page.getByText('Invio non riuscito')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Richiesta ricevuta.' })).toHaveCount(0);
+});
+
+test('honeypot submissions are dropped silently', async ({ page }) => {
+  const calls = await mockFormspree(page);
+  await openForm(page);
+  await fillValid(page);
+  await page.locator('input[name="_gotcha"]').evaluate((el: HTMLInputElement) => {
+    el.value = 'spam';
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await page.getByRole('button', { name: 'Invia il progetto' }).click();
+  await expect(page.getByRole('heading', { name: 'Richiesta ricevuta.' })).toBeVisible();
+  expect(calls).toHaveLength(0);
+});
+
+test('without JavaScript the form still posts to Formspree with native controls', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto('/contact');
+  const form = page.locator('form.form');
+  await expect(form).toHaveAttribute('action', FORMSPREE);
+  await expect(form).toHaveAttribute('method', 'post');
+  await expect(form.locator('select[name="service"]')).toBeVisible();
+  await expect(form.locator('input[name="_next"]')).toHaveValue(/\/contact\/grazie$/);
+  await context.close();
+});
+
+test.describe('production build without PUBLIC_FORMSPREE_ID', () => {
   let server: ChildProcess;
   test.beforeAll(async () => {
-    server = spawn('node', ['dist/server/entry.mjs'], {
-      env: { ...process.env, HOST: '127.0.0.1', PORT: '4397', CONTACT_TO_EMAIL: '', CONTACT_FROM_EMAIL: '', RESEND_API_KEY: '' },
-      stdio: 'ignore',
-    });
-    for (let i = 0; i < 50; i++) {
+    test.setTimeout(180_000);
+    const env = { ...process.env, PUBLIC_FORMSPREE_ID: '', PUBLIC_SITE_URL: 'http://127.0.0.1:4397' };
+    execSync('pnpm exec astro build --outDir .tmp-noform', { env, stdio: 'ignore' });
+    server = spawn('node', ['tests/static-server.mjs', '.tmp-noform', '4397'], { env, stdio: 'ignore' });
+    for (let i = 0; i < 100; i++) {
       try {
         if ((await fetch('http://127.0.0.1:4397/robots.txt')).ok) return;
       } catch {
@@ -92,46 +154,18 @@ test.describe('production without email credentials', () => {
   });
   test.afterAll(() => server?.kill());
 
-  test('never pretends the message was sent: API answers 503 and the UI shows an error', async ({ page, request }) => {
-    const payload = {
-      name: 'Mario Rossi',
-      email: 'mario@azienda.it',
-      company: 'Azienda Demo',
-      service: 'seo',
-      budget: 'da-definire',
-      timeline: 'asap',
-      message: 'Vorremmo migliorare la visibilità organica del nostro sito.',
-      privacy: true,
-    };
-    const res = await request.post('http://127.0.0.1:4397/api/contact', { data: payload, headers: { Accept: 'application/json' } });
-    expect(res.status()).toBe(503);
-    expect((await res.json()).ok).toBe(false);
-
-    await page.route('**/api/contact', (route) => route.continue({ url: 'http://127.0.0.1:4397/api/contact' }));
-    await openForm(page);
+  test('never pretends the message was sent', async ({ page }) => {
+    await page.goto('http://127.0.0.1:4397/contact');
+    await ready(page);
+    await dismissBanner(page);
+    await page.locator('form').scrollIntoViewIfNeeded();
+    await page.locator('form[data-hydrated="true"]').waitFor();
     await fillValid(page);
     await page.getByRole('button', { name: 'Invia il progetto' }).click();
     await expect(page.getByText('Invio non riuscito')).toBeVisible();
+    await expect(page.getByText('non è ancora collegato')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Richiesta ricevuta.' })).toHaveCount(0);
   });
-});
-
-test('server-side validation rejects invalid payloads', async ({ request }) => {
-  const res = await request.post('/api/contact', { data: { name: 'x', email: 'bad' }, headers: { Accept: 'application/json' } });
-  expect(res.status()).toBe(400);
-  const body = await res.json();
-  expect(body.ok).toBe(false);
-  expect(body.errors.email).toBeTruthy();
-  expect(body.errors.privacy).toBeTruthy();
-});
-
-test('honeypot is swallowed silently and cross-origin posts are refused', async ({ request }) => {
-  const before = (await mockState()).count;
-  const honeypot = await request.post('/api/contact', { data: { hp: 'spam' }, headers: { Accept: 'application/json' } });
-  expect(honeypot.status()).toBe(200);
-  expect((await mockState()).count).toBe(before); // nothing was sent
-  const cross = await request.post('/api/contact', { data: {}, headers: { Origin: 'https://evil.example', Accept: 'application/json' } });
-  expect(cross.status()).toBe(403);
 });
 
 test('custom select works from the keyboard (open, arrows, typeahead, Home/End, Escape)', async ({ page }) => {

@@ -10,6 +10,7 @@ interface Props {
 const { heading = true } = Astro.props;
 const email = mailto();
 const phone = tel();
+const thanksUrl = Astro.site ? new URL('/contact/grazie', Astro.site).toString() : undefined;
 ---
 
 <section class="contact section" data-theme="light" {...(heading ? { 'aria-labelledby': 'contact-title' } : { 'aria-label': 'Modulo di contatto' })} id="contatti" data-hide-sticky>
@@ -32,7 +33,7 @@ const phone = tel();
 
     <div class="contact__body grid-12">
       <div class="contact__form" data-reveal>
-        <ContactForm client:visible idPrefix="home" theme="light" />
+        <ContactForm client:visible idPrefix="home" theme="light" thanksUrl={thanksUrl} />
       </div>
       <aside class="contact__aside" aria-label="Recapiti">
         <div>

@@ -3,7 +3,7 @@ import tseslint from 'typescript-eslint';
 import astro from 'eslint-plugin-astro';
 
 export default [
-  { ignores: ['dist/**', '.astro/**', 'node_modules/**', 'test-results/**', 'scripts/_shots.mjs', 'public/**'] },
+  { ignores: ['dist/**', '.astro/**', 'node_modules/**', 'test-results/**', '.tmp-noform/**', '.netlify/**', 'scripts/_shots.mjs', 'public/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...astro.configs.recommended,
